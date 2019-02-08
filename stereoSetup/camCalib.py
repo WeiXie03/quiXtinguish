@@ -54,7 +54,7 @@ for fname in images:
 ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 #img = cv.imread(images[0])
-print(images)
+#print(images)
 for fname in images:
     img = cv.imread(fname)
 
@@ -70,9 +70,10 @@ for fname in images:
     dst = dst[y:y+h, x:x+w]
 
     #cv.imshow('img', dst)
-    print(fname)
+    #print(fname)
     if 'eft' in fname:
         cv.imwrite('./prcsdImgs/left' + fname[-9:-4] + '.png', dst)
     elif 'ght' in fname:
         cv.imwrite('./prcsdImgs/right' + fname[-9:-4] + '.png', dst)
-    np.savez('calibSettings', newcameramtx, dist, rvecs, tvecs)
+    #np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
+    print(newcameramtx, '\t', dist, '\n')
