@@ -11,8 +11,7 @@ class App(object):
     #datDir = input('Enter the path of the directory where the left and right images, and text data are saved.\n ')
     imNum = input('Enter the image number indicated in the names of the left right image pair you would like to use.\n ')
     imgs = []
-
-    suppDat = open('./data/' + datDir + '/data.json')
+    jdat = open('./data/' + datDir + '/data.json')
 
     def __init__(self, side):
         self.side = side
@@ -21,6 +20,8 @@ class App(object):
 
         cv2.setMouseCallback(self.side, clicked, self)
         self.finClick = False
+
+        #self.supDat = {left:{}, right:{}}
 
         App.imgs.append(self)
 
@@ -50,4 +51,4 @@ if __name__ == "__main__":
                 break
 
 cv2.destroyAllWindows()
-App.suppDat.close()
+App.jdat.close()
