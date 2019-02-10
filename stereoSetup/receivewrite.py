@@ -15,7 +15,9 @@ imCount = 0
 while(cap0.isOpened(),cap1.isOpened()):
     # Capture frame-by-frame
     ret0, frame0 = cap0.read()
+    print(ret0)
     ret1, frame1 = cap1.read()
+    print(ret1)
 
     '''
     # shrink the images to half size
