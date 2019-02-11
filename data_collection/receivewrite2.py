@@ -21,7 +21,7 @@ if __name__ == "__main__":
         with open(metadata_path, 'rb') as metadataf:
             metadata = pickle.load(metadataf)
     else:
-        metadata = []
+        metadata = {}
 
     im_count = 0
     if len(metadata.keys()) > 0:
