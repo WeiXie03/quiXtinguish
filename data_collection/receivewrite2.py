@@ -1,6 +1,5 @@
 import numpy
 import cv2
-import json
 import os
 import pickle
 
@@ -11,7 +10,7 @@ class Cam(object):
         self.win = cv2.namedWindow(self.side, cv2.WINDOW_OPENGL)
 
 if __name__ == "__main__":
-    DATA_DIR = 'data/camsSetPerm_channel/'
+    DATA_DIR = 'data/perm2/'
     streaml = Cam(5200, 'left')
     streamr = Cam(5000, 'right')
 
@@ -25,14 +24,14 @@ if __name__ == "__main__":
 
     im_count = 0
     if len(metadata.keys()) > 0:
-        im_count = max(metadatakeys()) + 1
+        im_count = max(metadata.keys()) + 1
 
     while(True):
         key_hit = None
         for stream in (streaml, streamr):
             _, frame = stream.cap.read()
             cv2.imshow(stream.side, frame)
-            key_hit = cv2.waitKey(1)
+        key_hit = cv2.waitKey(1)
 
         if key_hit == 32: #space bar
             # Want these to happen consecutive
@@ -49,7 +48,7 @@ if __name__ == "__main__":
                 print('wrote ', im_count)
             im_count += 1
 
-            metadata[im_count] = metadata_entry
+            metadata[im_count-1] = metadata_entry
 
         elif key_hit == ord('q'):
             break

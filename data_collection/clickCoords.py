@@ -14,14 +14,13 @@ class Cam(object):
 
         self.img = cv2.imread(img_path) #get img_path from metadata
 
-        #self.supDat = {left:{}, right:{}}
-
-
 #def saveDat(x, y):
     #saves coordinates of mouse, disparity and calculated depth to json file
 
 if __name__ == "__main__":
-    def clicked(event, x, y, flags, (src, metadata)):
+    def clicked(event, x, y, flags, param):
+        param[0] = src
+        param[1] = metadata
         if event == cv2.EVENT_LBUTTONDOWN:
             print('x: ', x, ', y: ', y)
             metadata[src.side]['coords'] = (x, y)
@@ -36,7 +35,7 @@ if __name__ == "__main__":
     else:
         print('the file ', metadata_path, ' was not found\nplease terminate this program and run receivewrite2.py')
         sys.exit()
-    metadata.sort()
+    #metadata.sort()
 
     print(metadata)
     imNum = input('Enter the image number of the left right image pair you would like to use.\n ')
@@ -64,7 +63,7 @@ if __name__ == "__main__":
         return(metadata_intri)
 
     CALIB_PATH = "./calibration/camMtx.npy"
-    if os.path.isfile(CALIB_PATH)):
+    if os.path.isfile(CALIB_PATH):
         calib = numpy.load(CALIB_PATH)
     focl = calib[4] #focal length y from stereo calibration, refer to https://docs.opencv.org/3.1.0/dc/dbb/tutorial_py_calibration.html
     baseline = float(input('Enter distance between center of camera lenses in cm.\t'))
@@ -73,8 +72,11 @@ if __name__ == "__main__":
     print('depth of fire is approximately ', est_depth, ' centimeters')
 
     metadata[imNum] = writeIntri(metadata[imNum], baseline, focl, disparity, est_depth)
-    print(metadata)
 
-    pickle.dump(metadata, metadataf)
+    print(metadata)
+    if input('Would you like to save to file?[y/n]: ') == 'y':
+        pickle.dump(metadata, metadataf)
+    else:
+        print('aborting')
     metadataf.close()
     cv2.destroyAllWindows()
