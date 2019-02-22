@@ -78,4 +78,4 @@ for fname in images:
     #np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
     np.savetxt('camMtx', (newcameramtx))
     np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
-    np.save('camMtx', (newcameramtx, dist, rvecs, tvecs))
+    np.save('camMtx', (newcameramtx))

@@ -21,11 +21,14 @@
 *.tar
 *.zip
 
-# Logs and databases #
+# Logs, databases and raw data #
 ######################
 *.log
 *.sql
 *.sqlite
+*.jpg
+*.jpeg
+*.png
 
 # OS generated files #
 ######################
