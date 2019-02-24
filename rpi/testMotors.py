@@ -66,7 +66,7 @@ if __name__ == "__main__":
         pi = gpio.pi()
         FREQUENCY = 1000#Hz
         #in1, in2, enable, frequency
-        left = Motor(pi, 23, 24, 13, FREQUENCY, 'left')
+        left = Motor(pi, 23, 24, 25, FREQUENCY, 'left')
         right = Motor(pi, 27, 22, 17, FREQUENCY, 'right')
 
         while True:
