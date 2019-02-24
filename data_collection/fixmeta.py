@@ -2,7 +2,7 @@ import os
 import pickle
 import sys
 
-DATA_DIR = './data/camsSetPerm_channel/'
+DATA_DIR = './data/test/'
 
 metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
 metadata = None
