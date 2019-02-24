@@ -10,8 +10,6 @@ class Motor():
 
         self.enable_pin = enable
         self.freq = frequency
-        self.pi.set_PWM_range(self.enable_pin, 255)
-        self.pwmRange = self.pi.get_PWM_range(self.enable_pin)
 
         self.setupPins()
         self.name = name
@@ -21,7 +19,10 @@ class Motor():
         self.pi.set_mode(self.in2_pin, gpio.OUTPUT)
 
         #pwm connected to enable for speed control
+        print(self.enable_pin)
         self.pi.set_mode(self.enable_pin, gpio.OUTPUT)
+        self.pi.set_PWM_range(self.enable_pin, 255)
+        self.pwmRange = self.pi.get_PWM_range(self.enable_pin)
         self.pi.set_PWM_frequency(self.enable_pin, self.freq)
 
         print('pins set up')
@@ -64,10 +65,11 @@ class Motor():
 if __name__ == "__main__":
     try:
         pi = gpio.pi()
+        print(pi)
         FREQUENCY = 1000#Hz
         #in1, in2, enable, frequency
-        left = Motor(pi, 23, 24, 13, FREQUENCY, 'left')
-        right = Motor(pi, 27, 22, 17, FREQUENCY, 'right')
+        left = Motor(pi, 19, 26, 13, FREQUENCY, 'left')
+        right = Motor(pi, 6, 5, 0, FREQUENCY, 'right')
 
         while True:
             for motor in (left, right):
