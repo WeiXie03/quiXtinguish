@@ -1,25 +1,18 @@
 import socket
-import RPi.GPIO as GPIO
 import testServo
-import pigpio as pig
-import testMotors
+import RPi.GPIO as GPIO
 
 HOST = '192.168.0.16'
 PORT = 3027
 
-#numbering scheme is BCM
-TILT_PIN = 12 #PWM0
-PAN_PIN = 13 #PWM1
-FREQ = 330 #330 is max for servos
+#numbering scheme is physical board
+TILT_PIN = 32
+PAN_PIN = 12
+FREQ = 60
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
     tilt = testServo.pwmServo(TILT_PIN, FREQ)
     pan = testServo.pwmServo(PAN_PIN, FREQ)
-
-    pi = pigpio.pi()
-    left = testMotors.Motor(pi, 23, 24, 25, FREQ, 'left')
-    right = testMotors.Motor(pi, 27, 22, 17, FREQ, 'right')
-
     sock.connect((HOST, PORT))
 
     while True:
