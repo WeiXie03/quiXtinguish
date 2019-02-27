@@ -1,14 +1,14 @@
 import pigpio as gpio
 
 class Motor():
-    def __init__(self, rpi, in1, in2, enable, frequency=100, name='default'):
+    def __init__(self, rpi, pins, frequency=100, name='default'):
         #pigpio raspberry pi object motor will be controlled by
         self.pi = rpi
         #both sides of L293D have pair of connections to motor and an enable controlled by RPi
-        self.in1_pin = in1
-        self.in2_pin = in2
+        self.in1_pin = pins[0]
+        self.in2_pin = pins[1]
 
-        self.enable_pin = enable
+        self.enable_pin = pins[2]
         self.freq = frequency
         self.pi.set_PWM_range(self.enable_pin, 255)
         self.pwmRange = self.pi.get_PWM_range(self.enable_pin)

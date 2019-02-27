@@ -26,7 +26,7 @@ def drive():
 
     return cmd
 
-def rotate(targetAngles):
+def rotate_servos(targetAngles):
     #targetAngles is [horizontal(panning), vertical(tilting)]
     if keyboard.is_pressed('j'):
         targetAngles[0] -= 1
@@ -57,7 +57,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
             print(e)
             sys.exit(1)
         else:
-            curServoAngles = curServoAngles.split(',')
+            curServoAngles = [int(x) for x in curServoAngles.split(',')]
 
         cmds = [None, None, None, None, None]
 
@@ -66,12 +66,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         cmds[2] = 40
 
         targetAngles = curServoAngles.copy()
-        targetAngles = rotate(targetAngles)
+        targetAngles = rotate_servos(targetAngles)
         cmds[3], cmds[4] = targetAngles
         cmds[3] = numpy.clip(cmds[3], 0, 180)
-        cmds[4] = numpy.clip(cmds[3], 0, 180)
+        cmds[4] = numpy.clip(cmds[4], 0, 180)
 
-        cmdsBytes = ','.join(str(cmds)).encode()
+        cmdsBytes = ','.join([str(x) for x in cmds]).encode('ascii')
+        print(cmdsBytes.decode('ascii'))
 
-        print(cmds)
-        #sock.sendto(cmdsBytes, (HOST, PORT))
+        print(','.join([str(x) for x in cmds]), (HOST, PORT))
+        sock.sendto(cmdsBytes, (HOST, PORT))
+        sleep(0.02)
