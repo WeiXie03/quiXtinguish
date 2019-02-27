@@ -1,4 +1,4 @@
-import pigpio as pig
+import pigpio as gpio
 
 class Motor():
     def __init__(self, rpi, in1, in2, enable, frequency=100, name='default'):
@@ -17,11 +17,11 @@ class Motor():
         self.name = name
 
     def setupPins(self):
-        self.pi.set_mode(self.in1_pin, pig.OUTPUT)
-        self.pi.set_mode(self.in2_pin, pig.OUTPUT)
+        self.pi.set_mode(self.in1_pin, gpio.OUTPUT)
+        self.pi.set_mode(self.in2_pin, gpio.OUTPUT)
 
         #pwm connected to enable for speed control
-        self.pi.set_mode(self.enable_pin, pig.OUTPUT)
+        self.pi.set_mode(self.enable_pin, gpio.OUTPUT)
         self.pi.set_PWM_frequency(self.enable_pin, self.freq)
 
         print('pins set up')
@@ -30,7 +30,7 @@ class Motor():
         return self.name
 
     def setSpeed(self, dutCyc):
-        #print('percentage of max speed ', dutCyc, '%')
+        print('percentage of max speed ', dutCyc, '%')
         dutCyc = int(self.pwmRange*dutCyc/100)
         #set speed using PWM to enable of L293D
         #duty cycle should be in percent
@@ -63,7 +63,7 @@ class Motor():
 
 if __name__ == "__main__":
     try:
-        pi = pig.pi()
+        pi = gpio.pi()
         FREQUENCY = 1000#Hz
         #in1, in2, enable, frequency
         left = Motor(pi, 23, 24, 25, FREQUENCY, 'left')
