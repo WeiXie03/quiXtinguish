@@ -6,15 +6,15 @@ from testMotion.testMotors import *
 import sys
 
 class Robot():
-    def __init__(self, l_motor_pins=(26,19,13), r_motor_pins=(5,6,0), tilt_pin=23, pan_pin=24, frequency=50, name='robot'):
+    def __init__(self, l_motor_pins=(26,19,13), r_motor_pins=(5,6,0), tilt_pin=18, pan_pin=24, frequency=50, name='robot'):
         self.pi = pig.pi()
         self.name = name
 
         self.freq = frequency
-        self.left = Motor(pi, l_motor_pins, frequency, 'left')
-        self.right = Motor(pi, r_motor_pins, frequency, 'right')
-        self.tilt = hwServo(pi, tilt_pin, frequency, 1420, 1750)
-        self.pan = Servo(pi, pan_pin, frequency)
+        self.left = Motor(self.pi, l_motor_pins, frequency, 'left')
+        self.right = Motor(self.pi, r_motor_pins, frequency, 'right')
+        self.tilt = hwServo(self.pi, tilt_pin, frequency, 1420, 1750)
+        self.pan = Servo(self.pi, pan_pin, frequency, 1000, 2000)
 
     def __repr__(self):
         return '{} using {} pigpio raspberry pi object\nfrequency={}, left motor controlled by pins {}, right by {}, tilt servo controlled by {}, pan by {}'.format(self.name, self.pi, self.freq, (self.left.in1_pin, self.left.in2_pin, self.left.enable_pin), (self.right.in1_pin, self.right.in2_pin, self.right.enable_pin), self.tilt.pin, self.pan.pin)
