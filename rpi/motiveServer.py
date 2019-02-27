@@ -96,4 +96,3 @@ if __name__ == "__main__":
         robot.pi.write(robot.pan.pin, 0)
         robot.pi.stop()
         print(robot.name, 'dead')
-        break
