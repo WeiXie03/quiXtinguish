@@ -66,34 +66,34 @@ if __name__ == "__main__":
     HOST = input('Enter IP address of RPi. ')
     PORT = 3027
 
-    robot = Robot(name='FireBot')
+    try:
+        robot = Robot(name='FireBot')
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.bind((HOST, PORT))
+            while True:
+                try:
+                    cmds, addr = sock.recvfrom(2048)
+                except socket.timeout as e:
+                    print(e)
+                    print('waiting(?)')
+                except socket.error as e:
+                    print(e)
+                    sys.exit()
+                else:
+                    cmds = [ele for ele in (cmds.decode()).split(',')]
+                    for cmd in cmds[2:]:
+                        cmd = int(cmd)
 
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-        sock.bind((HOST, PORT))
-        while True:
-            try:
-                cmds, addr = sock.recvfrom(2048)
-            except socket.timeout as e:
-                print(e)
-                print('waiting(?)')
-            except socket.error as e:
-                print(e)
-                sys.exit()
-            else:
-                cmds = [ele for ele in (cmds.decode()).split(',')]
-                for cmd in cmds[2:]:
-                    cmd = int(cmd)
+                    parse_cmds(cmds, robot)
 
-                parse_cmds(cmds, robot)
+                    cur_servo_angles = ','.join(cmds[3:]).encode()
+                    sock.sendto(cur_servo_angles, addr)
 
-                cur_servo_angles = ','.join(cmds[3:]).encode()
-                sock.sendto(cur_servo_angles, addr)
-
-            finally:
-                robot.left.close()
-                robot.right.close()
-                robot.pi.write(robot.tilt.pin, 0)
-                robot.pi.write(robot.pan.pin, 0)
-                robot.pi.stop()
-                print(robot.name, 'dead')
-                break
+        finally:
+            robot.left.close()
+            robot.right.close()
+            robot.pi.write(robot.tilt.pin, 0)
+            robot.pi.write(robot.pan.pin, 0)
+            robot.pi.stop()
+            print(robot.name, 'dead')
+            break

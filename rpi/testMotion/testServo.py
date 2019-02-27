@@ -5,6 +5,11 @@ class Servo():
         self.pin = pin
         self.pi = pi
         self.freq = freq
+        #set range of pulse widths
+        self.min_bound = min_bound
+        self.max_bound = max_bound
+
+        self.cur_angle = 90
         self.pi.set_mode(self.pin, pig.OUTPUT)
         self.pi.set_PWM_frequency(self.pin, freq)
         self.pwm_range = 40000
@@ -31,7 +36,7 @@ class Servo():
 
 class hwServo(Servo):
     def __init__(self, pi, pin, freq, min_bound=1000, max_bound=2000):
-        super().__init__(self, pi, pin, freq, min_bound=1000, max_bound=2000)
+        super().__init__(pi, pin, freq, min_bound, max_bound)
     def specTurn(self, duty):
         #scale to pigpio pwm range set, pigpio only takes ints
         duty = int(duty * self.pwm_range)
