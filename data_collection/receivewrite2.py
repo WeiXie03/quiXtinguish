@@ -4,10 +4,11 @@ import os
 import pickle
 
 class Cam(object):
-    def __init__(self, port, side):
+    def __init__(self, port, side, make_win=True):
         self.side = side
         self.cap = cv2.VideoCapture('udpsrc port=' + str(port) + ' ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
-        self.win = cv2.namedWindow(self.side, cv2.WINDOW_OPENGL)
+        if make_win:
+            self.win = cv2.namedWindow(self.side, cv2.WINDOW_OPENGL)
 
 if __name__ == "__main__":
     DATA_DIR = 'data/perm2/'

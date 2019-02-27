@@ -1,38 +1,77 @@
+import sys
 import socket
-import testServo
-import RPi.GPIO as GPIO
+import numpy as np
+import cv2
+import keyboard
+from data_collection.receivewrite2 import *
+from time import sleep
 
-HOST = '192.168.0.16'
+#NOTE: OpenCV in Python just cannot handle video streaming and keyboard control at the same time, will just manually run receiverwrite2.py concurrently
+
+def drive():
+    cmd = ['','']
+    if keyboard.is_pressed('w'):
+        cmd[0] = 'f'
+    elif keyboard.is_pressed('s'):
+        cmd[0] = 'b'
+    else:
+        cmd[0] = 'pause'
+
+    if keyboard.is_pressed('a'):
+        cmd[1] = 'l'
+    elif keyboard.is_pressed('d'):
+        cmd[1] = 'r'
+    else:
+        cmd[1] = 'pause'
+
+    return cmd
+
+def rotate(targetAngles):
+    #targetAngles is [horizontal(panning), vertical(tilting)]
+    if keyboard.is_pressed('j'):
+        targetAngles[0] -= 1
+    elif keyboard.is_pressed('l'):
+        targetAngles[0] += 1
+    elif keyboard.is_pressed('i'):
+        targetAngles[1] += 1
+    elif keyboard.is_pressed('k'):
+        targetAngles[1] -= 1
+    return targetAngles
+
+HOST = input('Enter IP address of RPi: ')
 PORT = 3027
+TIMEOUT_SECONDS = 1e-3
 
-#numbering scheme is physical board
-TILT_PIN = 32
-PAN_PIN = 12
-FREQ = 60
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    sock.settimeout(TIMEOUT_SECONDS)
+    #sock.connect((HOST, PORT))
+    print('connected to RPi at', HOST, 'on port', PORT)
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-    tilt = testServo.pwmServo(TILT_PIN, FREQ)
-    pan = testServo.pwmServo(PAN_PIN, FREQ)
-    sock.connect((HOST, PORT))
-
+    curServoAngles = [90, 90]
     while True:
         try:
-            data = sock.recv(1024).decode()
-            if data:
-                #assign which servo and the angle
-                data = data.split(', ')
-                servo = data[0]
-                angle = int(data[1])
+            curServoAngles = sock.recv(1024).decode()
+        except socket.timeout as e:
+            pass
+        except socket.error as e:
+            print(e)
+            sys.exit(1)
+        else:
+            curServoAngles = curServoAngles.split(',')
 
-                print('turning ', servo, ' to ', angle)
-                if servo == 'tilt' or servo == 't':
-                    tilt.specTurn(angle)
-                elif servo == 'pan' or 'p':
-                    pan.specTurn(angle)
-        except Exception:
-            raise
-            tilt.turn.stop()
-            pan.turn.stop()
-            GPIO.cleanup()
-            print('terminating')
-            break
+        cmds = [None, None, None, None, None]
+
+        #setting speed to 40% of max for now
+        cmds[0], cmds[1] = drive()
+        cmds[2] = 40
+
+        targetAngles = curServoAngles.copy()
+        targetAngles = rotate(targetAngles)
+        cmds[3], cmds[4] = targetAngles
+        cmds[3] = numpy.clip(cmds[3], 0, 180)
+        cmds[4] = numpy.clip(cmds[3], 0, 180)
+
+        cmdsBytes = ','.join(str(cmds)).encode()
+
+        print(cmds)
+        #sock.sendto(cmdsBytes, (HOST, PORT))
