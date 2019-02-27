@@ -89,11 +89,11 @@ if __name__ == "__main__":
                     cur_servo_angles = ','.join(cmds[3:]).encode()
                     sock.sendto(cur_servo_angles, addr)
 
-        finally:
-            robot.left.close()
-            robot.right.close()
-            robot.pi.write(robot.tilt.pin, 0)
-            robot.pi.write(robot.pan.pin, 0)
-            robot.pi.stop()
-            print(robot.name, 'dead')
-            break
+    finally:
+        robot.left.close()
+        robot.right.close()
+        robot.pi.write(robot.tilt.pin, 0)
+        robot.pi.write(robot.pan.pin, 0)
+        robot.pi.stop()
+        print(robot.name, 'dead')
+        break
