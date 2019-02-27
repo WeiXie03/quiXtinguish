@@ -48,8 +48,8 @@ if __name__ == '__main__':
             angle = float(input('Enter the  you would like the servo horn to turn to in degrees. Range: 0 to 180, 90 = neutral.\t'))
             tilt.specTurn(angle)
         except:
+            pi.stop()
             raise
             print('PWM signal terminated')
             break
 
-    pi.stop()
