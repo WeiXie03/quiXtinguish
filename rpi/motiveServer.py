@@ -1,6 +1,5 @@
 import socket
 import numpy
-import keyboard
 import pigpio as pig
 from testMotion.testServo import *
 from testMotion.testMotors import *
