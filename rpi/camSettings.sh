@@ -10,7 +10,7 @@ v4l2-ctl -d /dev/video0 \
 --set-ctrl=backlight_compensation=1 \
 --set-ctrl=exposure_auto_priority=0 \
 --set-ctrl=exposure_auto=1 \
---set-ctrl=exposure_absolute=60 \
+--set-ctrl=exposure_absolute=200 \
 --set-ctrl=focus_auto=0 \
 --set-ctrl=focus_absolute=0 \
 --set-ctrl=zoom_absolute=1
@@ -27,7 +27,7 @@ v4l2-ctl -d /dev/video1 \
 --set-ctrl=backlight_compensation=1 \
 --set-ctrl=exposure_auto_priority=0 \
 --set-ctrl=exposure_auto=1 \
---set-ctrl=exposure_absolute=60 \
+--set-ctrl=exposure_absolute=200 \
 --set-ctrl=focus_auto=0 \
 --set-ctrl=focus_absolute=0 \
 --set-ctrl=zoom_absolute=1

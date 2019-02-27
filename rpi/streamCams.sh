@@ -4,8 +4,13 @@
 #gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=960,height=540 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.0.16 port=5000 &
 #gst-launch-1.0 -v v4l2src device=/dev/video1 ! video/x-raw,format=YUY2,width=960,height=540 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.0.16 port=5200
 
-gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.43.250 port=5000 &
-gst-launch-1.0 -v v4l2src device=/dev/video1 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.43.250 port=5200
+# Hotspot
+#gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.43.250 port=5000 &
+#gst-launch-1.0 -v v4l2src device=/dev/video1 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.43.250 port=5200
+
+# Desktop
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.0.16 port=5000 &
+gst-launch-1.0 -v v4l2src device=/dev/video1 ! video/x-raw,format=YUY2,width=960,height=720 ! jpegenc ! rtpjpegpay ! udpsink host=192.168.0.16 port=5200
 
 #sending v4l2 video over UDP in RTP packets with H.264 compression to desktop, refer to https://devtalk.nvidia.com/default/topic/1037884/jetson-tx1/convert-gstreamer-pipeline-to-opencv-in-python/
 
