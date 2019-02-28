@@ -28,14 +28,15 @@ def drive():
 
 def rotate_servos(targetAngles):
     #targetAngles is [horizontal(panning), vertical(tilting)]
+    speed = 1.2
     if keyboard.is_pressed('j'):
-        targetAngles[0] -= 1
+        targetAngles[0] -= speed
     elif keyboard.is_pressed('l'):
-        targetAngles[0] += 1
+        targetAngles[0] += speed
     elif keyboard.is_pressed('i'):
-        targetAngles[1] += 1
+        targetAngles[1] += speed
     elif keyboard.is_pressed('k'):
-        targetAngles[1] -= 1
+        targetAngles[1] -= speed
     return targetAngles
 
 HOST = input('Enter IP address of RPi: ')
@@ -47,17 +48,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     #sock.connect((HOST, PORT))
     print('connected to RPi at', HOST, 'on port', PORT)
 
-    curServoAngles = [90, 90]
+    curServoAngles = [90.0, 90.0]
     while True:
         try:
-            curServoAngles = sock.recv(1024).decode()
+            data = sock.recv(1024).decode()
+            #print('cur', curServoAngles)
         except socket.timeout as e:
             pass
         except socket.error as e:
             print(e)
             sys.exit(1)
         else:
-            curServoAngles = [int(x) for x in curServoAngles.split(',')]
+            print(data)
+            #curServoAngles = [int(x) for x in curServoAngles.split(',')]
 
         cmds = [None, None, None, None, None]
 
@@ -65,15 +68,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         cmds[0], cmds[1] = drive()
         cmds[2] = 40
 
-        targetAngles = curServoAngles.copy()
-        targetAngles = rotate_servos(targetAngles)
-        cmds[3], cmds[4] = targetAngles
-        cmds[3] = numpy.clip(cmds[3], 0, 180)
-        cmds[4] = numpy.clip(cmds[4], 0, 180)
+        #targetAngles = curServoAngles.copy()
+        curServoAngles = rotate_servos(curServoAngles)
+        #cmds[3], cmds[4] = curServoAngles
+        curServoAngles[0] = numpy.clip(curServoAngles[0], 80.0, 110.0)
+        curServoAngles[1] = numpy.clip(curServoAngles[1], 80.0, 110.0)
+        cmds[3], cmds[4] = tuple([int(x) for x in curServoAngles])
 
-        cmdsBytes = ','.join([str(x) for x in cmds]).encode('ascii')
-        print(cmdsBytes.decode('ascii'))
+        print(curServoAngles)
 
-        print(','.join([str(x) for x in cmds]), (HOST, PORT))
+        cmdsBytes = ','.join([str(x) for x in cmds]).encode()
+        #print(cmdsBytes.decode())
+
+        #print(','.join([str(x) for x in cmds]), (HOST, PORT))
         sock.sendto(cmdsBytes, (HOST, PORT))
-        sleep(0.02)
+        sleep(0.05)
