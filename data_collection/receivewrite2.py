@@ -3,7 +3,7 @@ import cv2
 import os
 import pickle
 
-class Cam(object):
+class Cam():
     def __init__(self, port, side, make_win=True):
         self.side = side
         self.cap = cv2.VideoCapture('udpsrc port=' + str(port) + ' ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
