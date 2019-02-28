@@ -29,6 +29,7 @@
 *.jpg
 *.jpeg
 *.png
+*.ipynb
 
 # OS generated files #
 ######################
