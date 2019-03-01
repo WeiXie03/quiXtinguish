@@ -7,13 +7,16 @@ class Cam():
     def __init__(self, port, side, make_win=True):
         self.side = side
         self.cap = cv2.VideoCapture('udpsrc port=' + str(port) + ' ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink', cv2.CAP_GSTREAMER)
+        print("Finished getting cap")
         if make_win:
             self.win = cv2.namedWindow(self.side, cv2.WINDOW_OPENGL)
 
 if __name__ == "__main__":
-    DATA_DIR = 'data/perm2/'
+    DATA_DIR = 'data/thrwy/'
+    print('Setting up cams')
     streaml = Cam(5200, 'left')
     streamr = Cam(5000, 'right')
+    print('Setup complete')
 
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
     metadata = None
@@ -27,17 +30,19 @@ if __name__ == "__main__":
     if len(metadata.keys()) > 0:
         im_count = max(metadata.keys()) + 1
 
+    print('Starting')
     while(True):
         key_hit = None
         for stream in (streaml, streamr):
+            print('Waiting')
             _, frame = stream.cap.read()
             cv2.imshow(stream.side, frame)
         key_hit = cv2.waitKey(1)
 
         if key_hit == 32: #space bar
             # Want these to happen consecutive
-            _, framel = stream.cap.read()
-            _, framer = stream.cap.read()
+            _, framel = streaml.cap.read()
+            _, framer = streamr.cap.read()
 
             metadata_entry = {}
             for stream, frame  in [(streaml, framel), (streamr, framer)]:
@@ -46,10 +51,13 @@ if __name__ == "__main__":
                         "{}.jpg".format(str(im_count)))
                 metadata_entry[stream.side]["img_path"] = img_path
                 cv2.imwrite(img_path, frame)
-                print('wrote ', im_count)
+                print('wrote ', img_path, im_count)
             im_count += 1
 
             metadata[im_count-1] = metadata_entry
+
+            with open(metadata_path+'d', 'wb') as metadataf:
+                pickle.dump(metadata, metadataf)
 
         elif key_hit == ord('q'):
             break

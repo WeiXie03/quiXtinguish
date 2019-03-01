@@ -39,7 +39,7 @@ def drive():
 
 def rotate_servos(targetAngles):
     #targetAngles is [horizontal(panning), vertical(tilting)]
-    speed = 1.2
+    speed = 0.5
     if keyboard.is_pressed('j'):
         targetAngles[0] -= speed
     elif keyboard.is_pressed('l'):
@@ -106,4 +106,4 @@ if __name__ == "__main__":
                 cv2.imshow(stream.side, frame)
             '''
 
-            sleep(0.05)
+            sleep(0.1)

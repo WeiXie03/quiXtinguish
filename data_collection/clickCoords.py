@@ -38,7 +38,7 @@ def waitClick(src):
     return coord_dict['x'], coord_dict['y']
 
 if __name__ == "__main__":
-    DATA_DIR = 'data/gucco/'
+    DATA_DIR = 'data/fk_cndls/'
 
     #load the metadata
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
@@ -96,6 +96,9 @@ if __name__ == "__main__":
 
         metadata[int(imNum)] = paird
         print(paird)
+
+        with open(metadata_path+'e', 'wb') as metadataf:
+            pickle.dump(metadata, metadataf)
 
     '''
         def writeIntri(metadata_intri, baseline, focl, disparity, est_depth):
