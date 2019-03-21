@@ -52,7 +52,7 @@ class Servo():
     def turnPulseWidth(self, pulse_width):
         pulse_width = min(int(pulse_width), 2500)
         if not pulse_width == 0:
-            pulse_width = max(int(pulse_width), 1000)
+            pulse_width = max(int(pulse_width), 800)
         print(pulse_width)
         self.pi.set_servo_pulsewidth(self.pin, pulse_width)
 
