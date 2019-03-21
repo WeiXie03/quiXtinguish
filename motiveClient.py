@@ -88,8 +88,8 @@ if __name__ == "__main__":
             #targetAngles = curServoAngles.copy()
             curServoAngles = rotate_servos(curServoAngles)
             #cmds[3], cmds[4] = curServoAngles
-            curServoAngles[0] = numpy.clip(curServoAngles[0], 80.0, 110.0)
-            curServoAngles[1] = numpy.clip(curServoAngles[1], 80.0, 110.0)
+            curServoAngles[0] = numpy.clip(curServoAngles[0], 70.0, 110.0)
+            curServoAngles[1] = numpy.clip(curServoAngles[1], 70.0, 110.0)
             cmds[3], cmds[4] = tuple([int(x) for x in curServoAngles])
 
             print(curServoAngles)
