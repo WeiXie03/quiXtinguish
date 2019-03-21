@@ -3,7 +3,7 @@ import socket
 import numpy as np
 import cv2
 import keyboard
-from data_collection.receivewrite2 import *
+from data_collection.writeframes_stereo import *
 from time import sleep
 
 class Stream(cv2.VideoCapture):
