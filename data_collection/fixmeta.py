@@ -2,7 +2,7 @@ import os
 import pickle
 import sys
 
-DATA_DIR = './data/test/'
+DATA_DIR = './data/fk_cndls/'
 
 metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
 metadata = None

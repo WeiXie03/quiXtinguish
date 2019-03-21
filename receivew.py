@@ -2,7 +2,9 @@ import numpy
 import cv2
 
 cap0 = cv2.VideoCapture('udpsrc port=5200 ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink',cv2.CAP_GSTREAMER)
+print(cap0)
 cap1 = cv2.VideoCapture('udpsrc port=5000 ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink',cv2.CAP_GSTREAMER)
+print(cap1)
 
 win0 = cv2.namedWindow('cam0', cv2.WINDOW_OPENGL)
 win1 = cv2.namedWindow('cam1', cv2.WINDOW_OPENGL)
