@@ -1,4 +1,9 @@
-v4l2-ctl -d /dev/video0 \
+echo enter number in /dev/video for one cam
+read num1
+echo other cam
+read num2
+
+v4l2-ctl -d /dev/video$num1 \
 --set-ctrl=brightness=120 \
 --set-ctrl=contrast=32 \
 --set-ctrl=saturation=58 \
@@ -10,12 +15,12 @@ v4l2-ctl -d /dev/video0 \
 --set-ctrl=backlight_compensation=1 \
 --set-ctrl=exposure_auto_priority=0 \
 --set-ctrl=exposure_auto=1 \
---set-ctrl=exposure_absolute=90 \
+--set-ctrl=exposure_absolute=400 \
 --set-ctrl=focus_auto=0 \
 --set-ctrl=focus_absolute=0 \
 --set-ctrl=zoom_absolute=1
 
-v4l2-ctl -d /dev/video1 \
+v4l2-ctl -d /dev/video$num2 \
 --set-ctrl=brightness=120 \
 --set-ctrl=contrast=32 \
 --set-ctrl=saturation=58 \
@@ -27,7 +32,7 @@ v4l2-ctl -d /dev/video1 \
 --set-ctrl=backlight_compensation=1 \
 --set-ctrl=exposure_auto_priority=0 \
 --set-ctrl=exposure_auto=1 \
---set-ctrl=exposure_absolute=90 \
+--set-ctrl=exposure_absolute=400 \
 --set-ctrl=focus_auto=0 \
 --set-ctrl=focus_absolute=0 \
 --set-ctrl=zoom_absolute=1

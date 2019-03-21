@@ -14,7 +14,7 @@ class Robot():
         self.left = Motor(self.pi, l_motor_pins, frequency, 'left')
         self.right = Motor(self.pi, r_motor_pins, frequency, 'right')
         #self.tilt = hwServo(self.pi, tilt_pin, frequency, 1420, 1750)
-        self.tilt = Servo(self.pi, tilt_pin, frequency, 1450, 1750)
+        self.tilt = Servo(self.pi, tilt_pin, frequency, 1000, 1250)
         #self.pan = Servo(self.pi, pan_pin, frequency, 1420, 1750)
 
     def __repr__(self):
