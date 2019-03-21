@@ -18,7 +18,7 @@ class Robot():
         #self.pan = Servo(self.pi, pan_pin, frequency, 1420, 1750)
 
     def __repr__(self):
-        return '{} using {} pigpio raspberry pi object\nfrequency={}, left motor controlled by pins {}, right by {}, tilt servo controlled by {}, pan by {}'.format(self.name, self.pi, self.freq, (self.left.in1_pin, self.left.in2_pin, self.left.enable_pin), (self.right.in1_pin, self.right.in2_pin, self.right.enable_pin), self.tilt.pin)
+        return '{} using {} pigpio raspberry pi object\nfrequency={}, left motor controlled by pins {}, right by {}, tilt servo controlled by {}'.format(self.name, self.pi, self.freq, (self.left.in1_pin, self.left.in2_pin, self.left.enable_pin), (self.right.in1_pin, self.right.in2_pin, self.right.enable_pin), self.tilt.pin)
 
     def forward(self, lspeed, rspeed):
         self.left.clockwise(lspeed)
@@ -101,6 +101,6 @@ if __name__ == "__main__":
         robot.left.close()
         robot.right.close()
         robot.pi.write(robot.tilt.pin, 0)
-        robot.pi.write(robot.pan.pin, 0)
+        #robot.pi.write(robot.pan.pin, 0)
         robot.pi.stop()
         print(robot.name, 'dead')

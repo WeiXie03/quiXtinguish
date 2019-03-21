@@ -17,7 +17,7 @@ class Servo():
         self.close()
 
     def calc_pulsewidth(self, angle):
-        pulse_wid = (1000/90) * angle + 500 #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
+        pulse_wid = (1000/90) * angle  #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
         if pulse_wid <= self.min_bound:
             pulse_wid = self.min_bound
             print('outside range of allowed angles, pulse width set to lower bound {} microseconds'.format(self.min_bound))
@@ -30,7 +30,7 @@ class Servo():
 
 
     def calc_duty(self, angle):
-        pulse_wid = (1000/90) * angle + 500 #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
+        pulse_wid = (1000/90) * angle  #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
         if pulse_wid <= self.min_bound:
             pulse_wid = self.min_bound
             print('outside range of allowed angles, pulse width set to lower bound {} microseconds'.format(self.min_bound))
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     pi = pig.pi()
     pin = int(input('Enter the RPi pin number the servo is connected to according to Broadcom\'s numbering.\t'))
     frequency = 50
-    tilt = Servo(pi, pin, frequency, min_bound=2300, max_bound=2600)
+    tilt = Servo(pi, pin, frequency, min_bound=1000, max_bound=1300)
     tilt.close()
     try:
         for it in range(100):
