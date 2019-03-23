@@ -4,25 +4,38 @@ from numpy.polynomial.polynomial import polyfit
 import csv
 
 #only acceleration after launch is due to gravity, in vertical direction
-g = -9.8 #m*s^-2
+g = 9.8 #m*s^-2
+
+def calc_init_vel(vol=901, time=6.04, outer_dia=7.1, inner_dia=6.45):
+    #volume mL, time sec, radii mm
+
+    #v=Q/A; velocity = flow rate/area
+    flow_rate = vol/(10**6 * time)
+
+    outer_r = outer_dia/(2*10**3)
+    #measured diameter in millimeters
+    inner_r = inner_dia/(2*10**3)
+    opening_area = math.pi*(outer_r**2-inner_r**2)
+
+    vi = flow_rate/opening_area
+    return vi
 
 class Projectile():
-    def __init__(self, vi, theta, hi):
+    #measured flow rate with timer and grad cylinder, measured radius of nozzle with calipers
+    vi = calc_init_vel(901, 6.04, 7.1, 6.45)
+    hi = 0.29 #m
+
+    def __init__(self, theta):
         theta = math.radians(theta)
         #print('angle is {}*pi'.format(theta/math.pi))
-        self.vix, self.viy = vi*math.cos(theta), vi*math.sin(theta)
-        #self.vi = vi
-        self.diy = hi
+        self.vix, self.viy = Projectile.vi*math.cos(theta), Projectile.vi*math.sin(theta)
 
     def calc_hdisp(self):
         '''calculate and return horizontal displacement given init variables'''
         #solving for time t using: a/2*t^2 + viy*t + diy = 0, derived from d = vi*t + a(t^2)/2
-        discriminant = self.viy**2 - 4 * g/2 * self.diy
-        denom = g # =(2g)/2
-        time = ((discriminant**0.5-self.viy)/denom, (-(discriminant**0.5)-self.viy)/denom)
+        discriminant = self.viy**2 + 2*g*Projectile.hi
         #path of projectile is parabola, two x-intercepts exist, only want x-intercept farther than starting x position in positive x direction
-        #print('time can be {}, picking {}'.format(time, max(time)))
-        time = max(time)
+        time = max((self.viy + discriminant**0.5)/g, (self.viy - discriminant**0.5)/g)
 
         #horiz. disp. = horizontal velocity * time, horizontal velocity doesn't change; no friction, air resistance, etc.
         return time*self.vix
@@ -76,20 +89,14 @@ if __name__ == "__main__":
     #load experimental data from spreadsheet
     plt_graph(load_dat(DATA_PATH)[0], load_dat(DATA_PATH)[1], 'bo', 'experimental')
 
-    #flow_rate = float(input('Flow rate in mL/s: '))
-    #nozzle_radius = float(input('Radius of opening in nozzle(m): '))
-    #nozzle_area = math.pi * nozzle_radius**2
-
-    init_vel = 3.16475986 #m/s
-    #calculated from v=Q/A -> velocity = flow rate/area, measured flow rate with timer and grad cylinder, measured radius of nozzle with calipers
-    init_height = float(input('Initial height lauched from in cm: '))/100.0
+    Projectile.hi = float(input('Initial height lauched from in cm: '))/100.0
 
     angles = [angle for angle in range(-20, 25)]
-    #robot can tilt + and - 30 degrees, -30 degrees = 330 degrees
-    print('tilt angle range is -30 to 30 degrees')
+    #robot can tilt + and - ~20 to 26 degrees
+    print('tilt angle range assumed to be -20 to 25 degrees')
 
     #calculate horiz disp for projectiles at a lot of initial angles
-    projs = [Projectile(init_vel, angle, init_height) for angle in angles]
+    projs = [Projectile(angle) for angle in angles]
     hdisps = [proj.calc_hdisp() for proj in projs]
 
     #plot the graph
