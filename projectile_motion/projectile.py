@@ -87,7 +87,8 @@ def load_dat(dataf_path):
 if __name__ == "__main__":
     DATA_PATH = "projectile_experimental.csv"
     #load experimental data from spreadsheet
-    plt_graph(load_dat(DATA_PATH)[0], load_dat(DATA_PATH)[1], 'bo', 'experimental')
+    experi_dat = load_dat(DATA_PATH)
+    plt_graph(experi_dat[0], experi_dat[1], 'bo', 'experimental')
 
     Projectile.hi = float(input('Initial height lauched from in cm: '))/100.0
 
