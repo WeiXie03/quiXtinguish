@@ -12,12 +12,14 @@ class Servo():
         self.cur_angle = 90
         self.pi.set_mode(self.pin, pig.OUTPUT)
         self.pi.set_PWM_frequency(self.pin, freq)
+        print(self.pi.get_PWM_range(self.pin))
         self.pi.set_PWM_range(self.pin, 40000)
         self.pwm_range = self.pi.get_PWM_range(self.pin)
         self.close()
 
     def calc_pulsewidth(self, angle):
-        pulse_wid = (1000/90) * angle  #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
+        pulse_wid = (1000/90) * angle #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
+        #for tilt, no 500us offset
         if pulse_wid <= self.min_bound:
             pulse_wid = self.min_bound
             print('outside range of allowed angles, pulse width set to lower bound {} microseconds'.format(self.min_bound))
@@ -28,9 +30,8 @@ class Servo():
         print('\tpulse width', pulse_wid)
         return pulse_wid
 
-
     def calc_duty(self, angle):
-        pulse_wid = (1000/90) * angle  #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
+        pulse_wid = (1000/90)*angle #using points (0 deg, 500 us), (180 deg, 2500 us), derived: pulse width = (1000us/90deg)*angle+500us, us=microseconds
         if pulse_wid <= self.min_bound:
             pulse_wid = self.min_bound
             print('outside range of allowed angles, pulse width set to lower bound {} microseconds'.format(self.min_bound))
@@ -52,7 +53,7 @@ class Servo():
     def turnPulseWidth(self, pulse_width):
         pulse_width = min(int(pulse_width), 2500)
         if not pulse_width == 0:
-            pulse_width = max(int(pulse_width), 800)
+            pulse_width = max(int(pulse_width), 500)
         print(pulse_width)
         self.pi.set_servo_pulsewidth(self.pin, pulse_width)
 
@@ -60,7 +61,7 @@ class Servo():
         self.turnPulseWidth(self.calc_pulsewidth(angle))
 
     def close(self):
-        print("Closing")
+        print("pulse width set to OFF")
         self.pi.set_servo_pulsewidth(self.pin, 0)
 
 class hwServo(Servo):
@@ -74,9 +75,10 @@ class hwServo(Servo):
 
 if __name__ == '__main__':
     pi = pig.pi()
+    print(pi)
     pin = int(input('Enter the RPi pin number the servo is connected to according to Broadcom\'s numbering.\t'))
     frequency = 50
-    tilt = Servo(pi, pin, frequency, min_bound=1000, max_bound=1300)
+    tilt = Servo(pi, pin, frequency, min_bound=500, max_bound=2500)
     tilt.close()
     try:
         for it in range(100):
@@ -88,6 +90,6 @@ if __name__ == '__main__':
                 print('PWM signal terminated')
                 break
     finally:
+        print('ending')
         tilt.close()
         pi.stop()
-
