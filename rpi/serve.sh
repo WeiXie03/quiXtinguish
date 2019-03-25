@@ -1,4 +1,5 @@
-pigpiod
+sudo pigpiod
 
-bash "./streamCams.sh" &
-python3 "./motiveServer.py"
+echo intiating NIR cam stream
+python3 ./motiveServer.py
+sh ./stream_piCam.sh
