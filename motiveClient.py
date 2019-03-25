@@ -3,7 +3,7 @@ import socket
 import numpy as np
 import cv2
 import keyboard
-from data_collection.writeframes_stereo import *
+from data_collection.writeframes import *
 from time import sleep
 
 class Stream(cv2.VideoCapture):
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
             #setting speed to 40% of max for now
             cmds[0], cmds[1] = drive()
-            cmds[2] = 40
+            cmds[2] = 80
 
             #targetAngles = curServoAngles.copy()
             curServoAngles = rotate_servos(curServoAngles)
