@@ -7,7 +7,7 @@ import sys
 
 #pdb.set_trace()
 
-class Cam(object):
+class Camera(object):
     def __init__(self, side):
         self.side = side
         self.win = cv2.namedWindow(self.side, cv2.WINDOW_AUTOSIZE)
@@ -21,7 +21,7 @@ def clicked(event, x, y, flags, param):
         coord_dict["x"] = x
         coord_dict["y"] = y
         print('selected')
-        disp_img = cv2.circle(src.img, (x,y), 5, (0,14,231), 1)
+        disp_img = cv2.circle(src.img, (x,y), 4, (0,14,231), 1)
         cv2.imshow(src.side, disp_img)
 
 def waitClick(src):
@@ -52,41 +52,40 @@ if __name__ == "__main__":
         sys.exit()
 
     #get the image pair the user wants
-    left = Cam('left')
-    right = Cam('right')
+    left = Camera('left')
+    right = Camera('right')
+    nir = Camera('NoIR')
 
     print(metadata)
+
+    imNum = None
     while(True):
-        imNum = (input('Enter the image number of the left right image pair you would like to use or enter \'w\' if you would like to finish and save to file.\t')
+        imNum = (input('Enter the image number you would like to use or\nEnter \'w\' if you would like to finish and save to file.\n')
 )
-        if imNum == 'w':
-            print('saving selections to metadata, continuing')
-            break
-        else:
-            imNum = int(imNum)
     #for imNum in range(76, len(metadata.keys())):
+        if imNum == 'w':
+            break
+        imNum = int(imNum)
 
         paird = metadata[imNum]
 
-        paird[left.side]['coords'] = {}
-        paird[right.side]['coords'] = {}
+        for src in (left, right, nir):
+            paird[src.side]['coords'] = {}
 
-        limg_path = paird[left.side]['img_path']
-        left.img = cv2.imread(limg_path) #get img_path from metadata
-        rimg_path = paird[right.side]['img_path']
-        right.img = cv2.imread(rimg_path) #get img_path from metadata
+            img_path = paird[src.side]['img_path']
+            src.img = cv2.imread(img_path) #get img_path from metadata
 
-        print('Look at how many fires there are.')
-        cv2.imshow("both", np.hstack((left.img[::2, ::2],right.img[::2, ::2])))
-        cv2.waitKey(500)
+        #print('Look at how many fires there are.')
+        #cv2.imshow("both", np.hstack((left.img[::2, ::2],right.img[::2, ::2])))
+        #cv2.waitKey(500)
 
         #numFires = int(input('Enter the number of fires in the image pair: '))
         numFires = 1
-        print('hit any key to continue')
+        #print('hit any key to continue')
 
         print('Click on a fire in the image. When you are done, a window will pop up for you to select the corresponding point on the other image.')
         for index in range(numFires):
-            for src in [left, right]:
+            for src in (left, right, nir):
                 #create new image field of wrappers
 
                 #load image into window, get number of fires from user
@@ -98,6 +97,7 @@ if __name__ == "__main__":
         metadata[int(imNum)] = paird
         print(paird)
 
+        #save to duplicate
         with open(metadata_path+'e', 'wb') as metadataf:
             pickle.dump(metadata, metadataf)
 

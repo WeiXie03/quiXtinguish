@@ -6,19 +6,6 @@ import keyboard
 from data_collection.writeframes import *
 from time import sleep
 
-class Stream(cv2.VideoCapture):
-    def __init__(self, port, side):
-        super().__init__('udpsrc port={} ! application/x-rtp,media=video,payload=26,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink'.format(port), cv2.CAP_GSTREAMER)
-        self.side = side
-        self.win = cv2.namedWindow(self.side, cv2.WINDOW_OPENGL)
-        self.port = port
-
-    def __str__(self):
-        return 'video stream of {} camera on port {}'.format(self.side, self.port)
-
-    def __del__(self):
-        cv2.destroyAllWindows()
-
 def drive():
     cmd = ['','']
     if keyboard.is_pressed('w'):
@@ -61,8 +48,8 @@ if __name__ == "__main__":
         print('connected to RPi at', HOST, 'on port', PORT)
 
         '''
-        lcam = Stream(5000, 'left')
-        rcam = Stream(5200, 'right')
+        lcam = writeframes.Cam(5000, 'left')
+        rcam = writeframes.Cam(5200, 'right')
         '''
         curServoAngles = [90.0, 90.0]
         while True:
@@ -78,18 +65,17 @@ if __name__ == "__main__":
                 print(data)
                 #curServoAngles = [int(x) for x in curServoAngles.split(',')]
 
-
             cmds = [None, None, None, None, None]
 
             #setting speed to 40% of max for now
             cmds[0], cmds[1] = drive()
-            cmds[2] = 40
+            cmds[2] = 80
 
             #targetAngles = curServoAngles.copy()
             curServoAngles = rotate_servos(curServoAngles)
             #cmds[3], cmds[4] = curServoAngles
             curServoAngles[0] = numpy.clip(curServoAngles[0], 45.0, 130.0)
-            curServoAngles[1] = numpy.clip(curServoAngles[1], 70.0, 110.0)
+            curServoAngles[1] = numpy.clip(curServoAngles[1], 55.0, 115.0)
             cmds[3], cmds[4] = tuple([int(x) for x in curServoAngles])
 
             print(curServoAngles)
