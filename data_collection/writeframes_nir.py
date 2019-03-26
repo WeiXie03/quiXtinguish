@@ -2,6 +2,7 @@ import numpy
 import cv2
 import os
 import pickle
+import sys
 
 class Cam():
     def __init__(self, port, name, make_win=True):
@@ -15,7 +16,7 @@ class Cam():
             self.win = cv2.namedWindow(self.name, cv2.WINDOW_OPENGL)
 
 if __name__ == "__main__":
-    DATA_DIR = '../quiXtinguish/data_collection/data/nir_test'
+    DATA_DIR = os.path.join(sys.argv[1])
     print('Setting up cams')
     stream = Cam(6300, 'NoIR')
     print('Setup complete')

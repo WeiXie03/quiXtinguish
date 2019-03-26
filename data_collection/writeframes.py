@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     streaml = Cam(5200, 'left')
     streamr = Cam(5000, 'right')
-    stream_nir = Cam(6300, 'NoIR')
+    #stream_nir = Cam(6300, 'NoIR')
     print('cameras set up')
 
     #storing stuff like image file location and coordinates of the fire in a bunch of dictionaries in an encoded(bytes) metadata file
@@ -55,8 +55,8 @@ if __name__ == "__main__":
     print('Starting')
     while(True):
         key_hit = None
-        for stream in (streaml, streamr, stream_nir):
-        #for stream in (streaml, streamr):
+        #for stream in (streaml, streamr, stream_nir):
+        for stream in (streaml, streamr):
             _, frame = stream.cap.read()
             cv2.imshow(stream.label, frame)
 
@@ -65,11 +65,11 @@ if __name__ == "__main__":
             # Want these to happen consecutive
             _, framel = streaml.cap.read()
             _, framer = streamr.cap.read()
-            _, frame_nir = stream_nir.cap.read()
+            #_, frame_nir = stream_nir.cap.read()
 
             metadata_entry = {}
-            for stream, frame  in [(streaml, framel), (streamr, framer), (stream_nir, frame_nir)]:
-            #for stream, frame  in ((streaml, framel), (streamr, framer)):
+            #for stream, frame  in [(streaml, framel), (streamr, framer), (stream_nir, frame_nir)]:
+            for stream, frame  in ((streaml, framel), (streamr, framer)):
                 metadata_entry[stream.label] = {}
 
                 #path will be something like "data/dataset/left/45.jpg"
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         pickle.dump(metadata, metadataf)
 
     #When everything done, release the capture
-    for stream in (streaml, streamr, stream_nir):
-    #for stream in (streaml, streamr):
+    #for stream in (streaml, streamr, stream_nir):
+    for stream in (streaml, streamr):
         stream.cap.release()
     cv2.destroyAllWindows()
