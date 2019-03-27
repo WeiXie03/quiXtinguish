@@ -8,7 +8,7 @@ v4l2-ctl -d /dev/video$num1 \
 --set-ctrl=contrast=32 \
 --set-ctrl=saturation=58 \
 --set-ctrl=white_balance_temperature_auto=0 \
---set-ctrl=white_balance_temperature=4000\
+--set-ctrl=white_balance_temperature=6000\
 --set-ctrl=gain=64 \
 --set-ctrl=power_line_frequency=2 \
 --set-ctrl=sharpness=22 \
@@ -25,7 +25,7 @@ v4l2-ctl -d /dev/video$num2 \
 --set-ctrl=contrast=32 \
 --set-ctrl=saturation=58 \
 --set-ctrl=white_balance_temperature_auto=0 \
---set-ctrl=white_balance_temperature=4000\
+--set-ctrl=white_balance_temperature=6000\
 --set-ctrl=gain=64 \
 --set-ctrl=power_line_frequency=2 \
 --set-ctrl=sharpness=22 \
