@@ -101,6 +101,6 @@ if __name__ == "__main__":
         robot.left.close()
         robot.right.close()
         robot.pi.write(robot.tilt.pin, 0)
-        #robot.pi.write(robot.pan.pin, 0)
+        robot.pi.write(robot.pan.pin, 0)
         robot.pi.stop()
         print(robot.name, 'dead')

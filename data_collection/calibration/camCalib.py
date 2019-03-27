@@ -2,13 +2,15 @@ import numpy as np
 import cv2 as cv
 import glob
 import pdb
+import os
+import sys
 #pdb.set_trace()
 
 # termination criteria
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 #specify the number of corners of the chessboard used, refer to OpenCV 3D calibration docs
-yCrn = 9
+yCrn = 8
 xCrn = 6
 
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
@@ -19,13 +21,16 @@ objp[:,:2] = np.mgrid[0:yCrn,0:xCrn].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob('../data/rawImgs/*.jpg')
+print('enter path of directory containing images of checkerboard as terminal argument')
+side = sys.argv[2]
+images = os.listdir(os.path.join(sys.argv[1], side))
 #images = glob.glob('/home/wei/opencv-3.4.5/samples/data/left*')
 
 #win = cv.namedWindow('img')
 
 for fname in images:
-    img = cv.imread(fname)
+    print(fname)
+    img = cv.imread(os.path.join(sys.argv[1], side, fname))
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     #cv.imshow(fname, gray)
     #cv.waitKey(60)
@@ -39,12 +44,10 @@ for fname in images:
         corners2 = cv.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
         imgpoints.append(corners)
 
-        '''
         # Draw and display the corners
         cv.drawChessboardCorners(img,(yCrn,xCrn), corners2, ret)
         cv.imshow('img', img)
         cv.waitKey(5000)
-        '''
 
 #cv.destroyAllWindows()
 
@@ -56,7 +59,7 @@ ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.sha
 #img = cv.imread(images[0])
 #print(images)
 for fname in images:
-    img = cv.imread(fname)
+    img = cv.imread(os.path.join(sys.argv[1], side, fname))
 
     h, w = img.shape[:2]
     #refine camera matrix according to alpha value and get region of interest
@@ -71,11 +74,8 @@ for fname in images:
 
     #cv.imshow('img', dst)
     #print(fname)
-    if 'eft' in fname:
-        cv.imwrite('../data/prcsdImgs/left' + fname[-9:-4] + '.png', dst)
-    elif 'ght' in fname:
-        cv.imwrite('../data/prcsdImgs/right' + fname[-9:-4] + '.png', dst)
+
     #np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
-    np.savetxt('camMtx', (newcameramtx))
-    np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
-    np.save('camMtx', (newcameramtx))
+    np.savetxt('camMtx_{}.txt'.format(side), (newcameramtx))
+    np.save('calibSettings_{}'.format(side), (newcameramtx, dist, rvecs, tvecs))
+    np.save('camMtx_{}'.format(side), (newcameramtx))
