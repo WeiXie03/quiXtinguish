@@ -65,13 +65,13 @@ def metadd(meta_entry, stream_name, datadir, imgind):
     meta_entry[stream_name] = {}
 
     #path will be something like "data/dataset/left/45.jpg"
-    img_path = os.path.join(datadir, stream_name, "{}.jpg".format(str(imind)))
+    img_path = os.path.join(datadir, stream_name, "{}.jpg".format(str(imgind)))
     #enter path in metadata as dictionary value for the stream(left, right or nir)
     meta_entry[stream_name]["img_path"] = img_path
 
     #actually save frame to file
     cv2.imwrite(img_path, frame)
-    print('wrote ', img_path, imind)
+    print('wrote ', img_path, imgind)
 
 if __name__ == "__main__":
     print('data directory, calibrated mtx path are command line args')
