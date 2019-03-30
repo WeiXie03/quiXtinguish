@@ -51,7 +51,7 @@ if __name__ == "__main__":
         lcam = writeframes.Cam(5000, 'left')
         rcam = writeframes.Cam(5200, 'right')
         '''
-        curServoAngles = [90.0, 90.0]
+        curServoAngles = (90.0, 90.0)
         while True:
             try:
                 data = sock.recv(1024).decode()
@@ -74,8 +74,8 @@ if __name__ == "__main__":
             #targetAngles = curServoAngles.copy()
             curServoAngles = rotate_servos(curServoAngles)
             #cmds[3], cmds[4] = curServoAngles
-            curServoAngles[0] = numpy.clip(curServoAngles[0], 45.0, 130.0)
-            curServoAngles[1] = numpy.clip(curServoAngles[1], 55.0, 115.0)
+            curServoAngles[0] = numpy.clip(curServoAngles[0], 68.0, 113.0)
+            curServoAngles[1] = numpy.clip(curServoAngles[1], 70.0, 135.0)
             cmds[3], cmds[4] = tuple([int(x) for x in curServoAngles])
 
             print(curServoAngles)
