@@ -27,9 +27,9 @@ def drive():
 def rotate_servos(targetAngles):
     #targetAngles is [horizontal(panning), vertical(tilting)]
     speed = 0.5
-    if keyboard.is_pressed('j'):
+    if keyboard.is_pressed('l'):
         targetAngles[0] -= speed
-    elif keyboard.is_pressed('l'):
+    elif keyboard.is_pressed('j'):
         targetAngles[0] += speed
     elif keyboard.is_pressed('i'):
         targetAngles[1] += speed
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
             #setting speed to 40% of max for now
             cmds[0], cmds[1] = drive()
-            cmds[2] = 80
+            cmds[2] = 60
 
             #targetAngles = curServoAngles.copy()
             curServoAngles = rotate_servos(curServoAngles)
