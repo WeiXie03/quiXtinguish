@@ -25,15 +25,16 @@ class Projectile():
     vi = calc_init_vel(901, 6.04, 7.1, 6.45)
     hi = 0.29 #m
 
-    def __init__(self, theta):
+    def __init__(self, theta, fire_height):
         theta = math.radians(theta)
         #print('angle is {}*pi'.format(theta/math.pi))
         self.vix, self.viy = Projectile.vi*math.cos(theta), Projectile.vi*math.sin(theta)
+        self.hfire = fire_height
 
     def calc_hdisp(self):
         '''calculate and return horizontal displacement given init variables'''
         #solving for time t using: a/2*t^2 + viy*t + diy = 0, derived from d = vi*t + a(t^2)/2
-        discriminant = self.viy**2 + 2*g*Projectile.hi
+        discriminant = self.viy**2 + 2*g*(Projectile.hi-self.hfire)
         #path of projectile is parabola, two x-intercepts exist, only want x-intercept farther than starting x position in positive x direction
         time = max((self.viy + discriminant**0.5)/g, (self.viy - discriminant**0.5)/g)
 
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     print('tilt angle range assumed to be -20 to 25 degrees')
 
     #calculate horiz disp for projectiles at a lot of initial angles
-    projs = [Projectile(angle) for angle in angles]
+    projs = [Projectile(angle, 0) for angle in angles]
     hdisps = [proj.calc_hdisp() for proj in projs]
 
     #plot the graph

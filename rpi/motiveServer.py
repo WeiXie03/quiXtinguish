@@ -14,8 +14,8 @@ class Robot():
         self.left = Motor(self.pi, l_motor_pins, frequency, 'left')
         self.right = Motor(self.pi, r_motor_pins, frequency, 'right')
         #self.tilt = hwServo(self.pi, tilt_pin, frequency, 1420, 1750)
-        self.tilt = Servo(self.pi, tilt_pin, frequency, 800, 1400)
-        self.pan = Servo(self.pi, pan_pin, frequency, 500, 2000)
+        self.tilt = Servo(self.pi, tilt_pin, frequency, 650, 1140)
+        self.pan = Servo(self.pi, pan_pin, frequency, 670, 1380)
 
     def __repr__(self):
         return '{} using {} pigpio raspberry pi object\nfrequency={}, left motor controlled by pins {}, right by {}, tilt servo controlled by {}, pan by {}'.format(self.name, self.pi, self.freq, (self.left.in1_pin, self.left.in2_pin, self.left.enable_pin), (self.right.in1_pin, self.right.in2_pin, self.right.enable_pin), self.tilt.pin, self.pan.pin)

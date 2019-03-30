@@ -7,19 +7,24 @@ import math
 
 def send_turn_angle(event, x, y, flags, data):
     #data should be iterable with calibration matrix, image, socket
-    calib_mtx = data[0]
-    foclx = calib_mtx[0][0]
-    print(foclx)
-    img = data[1]
-    addr = data[2]
-    socket = data[3]
 
     if event == cv2.EVENT_LBUTTONDOWN:
-        #shape of a mat object is height, width, channel
-        req_disp = img.shape[1]/2 - x
-        req_angle = math.degrees(math.atan(req_disp/foclx)) + 90
+        print(x)
+        calib_mtx = data[0]
+        foclx = calib_mtx[0][0]
+        #print(foclx)
+        img = data[1]
+        addr = data[2]
+        socket = data[3]
 
+        width = img.shape[1]
+        print('width', width)
+
+        #shape of a mat object is height, width, channel
+        req_disp = img.shape[1]/2 - (x-img.shape[1]/2)
+        req_angle = math.degrees(math.atan(req_disp/foclx)) + 55
         print(req_angle)
+
         socket.sendto(str(req_angle).encode(), addr)
 
 if __name__ == "__main__":
