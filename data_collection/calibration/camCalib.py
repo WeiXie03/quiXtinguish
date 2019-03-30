@@ -77,5 +77,5 @@ for fname in images:
 
     #np.save('calibSettings', (newcameramtx, dist, rvecs, tvecs))
     np.savetxt('camMtx_{}.txt'.format(side), (newcameramtx))
-    np.save('calibSettings_{}'.format(side), (newcameramtx, dist, rvecs, tvecs))
+    np.save('calibSettings_{}'.format(side), (mtx, dist, rvecs, tvecs))
     np.save('camMtx_{}'.format(side), (newcameramtx))
