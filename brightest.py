@@ -42,10 +42,14 @@ class Window():
 
     def cmd_pan(self, img, coords):
         x = coords[0]
-        if x < img.shape[1]/2:
-            return -1*self.angstep
-        elif x > img.shape[1]/2:
-            return self.angstep
+        print(x-self.angstep)
+        if x < img.shape[1]/2-5:
+            print(1/8+abs(x)/(img.shape[1]/32))
+            return max(-1*self.angstep*(1/8+abs(x)/(img.shape[1]/8)), -15)
+        elif x > img.shape[1]/2+5:
+            print(1/8+abs(x)/(img.shape[1]/64))
+            return min(self.angstep*(1/8+abs(x)/(img.shape[1]/8)), 15)
+            #return max(self.angstep)
         else:
             return 0
 
@@ -79,7 +83,8 @@ if __name__ == "__main__":
     #radius for the brightest spot search
     BRIGHT_RADIUS = 29 #pixels
     CALIB_PATH = sys.argv[2]
-    HOST = input('IP of RPi: ')
+    #HOST = input('IP of RPi: ')
+    HOST = "192.168.43.16"
     PORT = 3030
 
     nir = stream.Cam(6300, 'NoIR', stream.Codec.H264)
@@ -90,10 +95,10 @@ if __name__ == "__main__":
     im_count = 0
     metadata, im_count = load_meta(metadata_path, im_count)
 
-    socket.setdefaulttimeout(0.005)
     print('Starting')
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.bind(('', PORT))
+        sock.setblocking(0)
         #little test
         #sock.sendto(b'connected', (HOST, PORT))
 
@@ -111,34 +116,53 @@ if __name__ == "__main__":
 
             key_hit = cv2.waitKey(1)
             if key_hit == 32: #space bar
+                for ind in range(4):
                 # Want these to happen consecutive
-                _, frame = nir.cap.read()
+                    _, frame = nir.cap.read()
+                    w_, wastefr = nir.cap.read()
 
-                metadata_entry = {}
-                metadd(metadata_entry, nir.label, DATA_DIR, im_count)
-                metadata[im_count] = metadata_entry
+                    metadata_entry = {}
+                    metadd(metadata_entry, nir.label, DATA_DIR, im_count)
+                    metadata[im_count] = metadata_entry
 
-                im_count += 1
+                    im_count += 1
 
-                ''' backup
-                with open(metadata_path+'d', 'wb') as metadataf:
-                    pickle.dump(metadata, metadataf)
-                '''
+                    ''' backup
+                    with open(metadata_path+'d', 'wb') as metadataf:
+                        pickle.dump(metadata, metadataf)
+                    '''
 
             try:
                 cur_ang, (HOST, PORT) = sock.recvfrom(1024)
                 cur_ang = float(cur_ang.decode())
                 print(cur_ang)
-            except socket.timeout as e:
-                print(e)
+            except BlockingIOError as e:
+                #print(e)
                 continue
             except ValueError:
                 print(ValueError)
                 continue
             else:
                 #calculate and send angle to pan to to RPi
+
+                print(cur_ang)
+                try:
+                    while True:
+                        cur_ang, (HOST, PORT) = sock.recvfrom(1024)
+                        cur_ang = float(cur_ang.decode())
+                except BlockingIOError as e:
+                    pass
+
+                for i in range(15):
+                    nir.cap.read()
+                _, frame = nir.cap.read()
+
+                print(cur_ang)
+                print('updated')
+
+                bspot = win.find_brightest(frame)
                 incre = win.cmd_pan(frame, bspot)
-                sock.sendto(str(incre).encode(), (HOST, PORT))
+                sock.sendto(str(cur_ang-incre).encode(), (HOST, PORT))
 
     with open(metadata_path, 'wb') as metadataf:
         pickle.dump(metadata, metadataf)
