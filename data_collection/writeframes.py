@@ -56,10 +56,18 @@ if __name__ == "__main__":
     print('Starting')
     while(True):
         key_hit = None
+        '''
         for stream in (streaml, streamr, stream_nir):
         #for stream in (streaml, streamr):
             _, frame = stream.cap.read()
             cv2.imshow(stream.label, frame)
+        '''
+        _, framel = streaml.cap.read()
+        _, framer = streamr.cap.read()
+        _, frame_nir = stream_nir.cap.read()
+
+        stc = numpy.hstack((framel, framer))
+        cv2.imshow('left', stc)
 
         key_hit = cv2.waitKey(1)
         if key_hit == 32: #space bar
