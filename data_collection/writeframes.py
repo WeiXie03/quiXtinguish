@@ -13,7 +13,7 @@ class Codec(Enum):
     X264=1
 
 class Cam():
-    def __init__(self, port, label, codec=Codec.MJPEG):
+    def __init__(self, port, label, codec=Codec.MJPEG, make_win=True):
         self.label = label
 
         print(codec)
@@ -25,7 +25,8 @@ class Cam():
             self.cap = cv2.VideoCapture("udpsrc port={} ! application/x-rtp, encoding-name=JPEG, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink".format(port), cv2.CAP_GSTREAMER)
         print(self.cap)
 
-        self.win = cv2.namedWindow(self.label, cv2.WINDOW_OPENGL)
+        if make_win:
+            self.win = cv2.namedWindow(self.label, cv2.WINDOW_OPENGL)
 
     def __repr__(self):
         return 'stream of {} camera, receiving stream through {}'.format(self.label, self.cap)

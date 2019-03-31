@@ -3,6 +3,7 @@ import cv2
 import os
 import pickle
 import sys
+import writeframes
 
 class Cam():
     def __init__(self, port, name, make_win=True):
@@ -18,7 +19,7 @@ class Cam():
 if __name__ == "__main__":
     DATA_DIR = os.path.join(sys.argv[1])
     print('Setting up cams')
-    stream = Cam(6300, 'NoIR')
+    stream = writeframes.Cam(6300, 'NoIR')
     print('Setup complete')
 
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
@@ -37,15 +38,15 @@ if __name__ == "__main__":
     while(True):
         key_hit = None
         _, frame = stream.cap.read()
-        cv2.imshow(stream.name, frame)
+        cv2.imshow(stream.label, frame)
         key_hit = cv2.waitKey(1)
 
         if key_hit == 32: #space bar
             metadata_entry = {}
-            metadata_entry[stream.name] = {}
-            img_path = os.path.join(DATA_DIR, stream.name,
+            metadata_entry[stream.label] = {}
+            img_path = os.path.join(DATA_DIR, stream.label,
                     "{}.jpg".format(im_count))
-            metadata_entry[stream.name]["img_path"] = img_path
+            metadata_entry[stream.label]["img_path"] = img_path
             cv2.imwrite(img_path, frame)
             print('wrote ', img_path, im_count)
 
