@@ -176,8 +176,8 @@ if __name__ == "__main__":
                 #print('updated')
 
                 bspot = win.find_brightest(frame)
-                #check whether fire is in +/- 3 px of middle of view/frame
-                if bspot[0]<frame.shape[1]/2+3 and bspot[0]>frame.shape[1]/2-3:
+                #check whether fire is in +/- 2 px of middle of view/frame
+                if bspot[0]<frame.shape[1]/2+2 and bspot[0]>frame.shape[1]/2-2:
                     print('good enough')
                     break
                 incre = win.cmd_pan(frame, bspot)
