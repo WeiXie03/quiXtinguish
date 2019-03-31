@@ -74,11 +74,12 @@ def load_meta(metadata_path, im_count):
 
     return metadata, im_count
 
-def metadd(meta_entry, stream_name, datadir, imgind):
+def metadd(meta_entry, stream_name, datadir, imgind, frame):
     meta_entry[stream_name] = {}
 
     #path will be something like "data/dataset/left/45.jpg"
     img_path = os.path.join(datadir, stream_name, "{}.jpg".format(str(imgind)))
+    print(img_path)
     #enter path in metadata as dictionary value for the stream(left, right or nir)
     meta_entry[stream_name]["img_path"] = img_path
 
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     BRIGHT_RADIUS = 29 #pixels
     CALIB_PATH = sys.argv[2]
     #HOST = input('IP of RPi: ')
-    HOST = "192.168.0.12"
+    HOST = "192.168.43.16"
     PORT = 3030
 
     BASELINE = 35.9/10**2
@@ -105,8 +106,8 @@ if __name__ == "__main__":
 
     #load the metadata, holds img paths and other things in dictionaries
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
-    im_count = 0
-    metadata, im_count = load_meta(metadata_path, im_count)
+    exp_count = 0
+    metadata, exp_count = load_meta(metadata_path, exp_count)
 
     print('Starting')
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
@@ -123,11 +124,8 @@ if __name__ == "__main__":
             _, rframe = right.cap.read()
             #print('updated')
 
-            bspot = win.find_brightest(nir_frame)
-            win.show_spot(nir.label, nir_frame, bspot)
-            #find brightest point, show it on current frame
-
             key_hit = cv2.waitKey(1)
+            '''
             if key_hit == 32: #space bar
                 for ind in range(4):
                 # Want these to happen consecutive
@@ -135,7 +133,7 @@ if __name__ == "__main__":
                     w_, wastefr = nir.cap.read()
 
                     metadata_entry = {}
-                    metadd(metadata_entry, nir.label, DATA_DIR, im_count)
+                    metadd(metadata_entry, nir.label, DATA_DIR, im_count, frame)
                     metadata[im_count] = metadata_entry
 
                     im_count += 1
@@ -143,6 +141,11 @@ if __name__ == "__main__":
                     #backup
                     with open(metadata_path+'d', 'wb') as metadataf:
                         pickle.dump(metadata, metadataf)
+            '''
+
+            bspot = win.find_brightest(nir_frame)
+            win.show_spot(nir.label, nir_frame, bspot)
+            #find brightest point, show it on current frame
 
             try:
                 cur_ang, (HOST, PORT) = sock.recvfrom(1024)
@@ -173,13 +176,14 @@ if __name__ == "__main__":
                 #print('updated')
 
                 bspot = win.find_brightest(frame)
-                #check whether fire is in +/- 5 px of middle of view/frame
-                if bspot[0]<frame.shape[1]/2+5 and bspot[0]>frame.shape[1]/2-5:
+                #check whether fire is in +/- 3 px of middle of view/frame
+                if bspot[0]<frame.shape[1]/2+3 and bspot[0]>frame.shape[1]/2-3:
                     print('good enough')
                     break
                 incre = win.cmd_pan(frame, bspot)
                 sock.sendto(str(cur_ang-incre).encode(), (HOST, PORT))
 
+        '''
         for cam in left, right:
             #make windows for left and right that will display difference between consecutive frames
             cam.diffwin = cv2.namedWindow(cam.label+' diff', cv2.WINDOW_OPENGL)
@@ -190,39 +194,62 @@ if __name__ == "__main__":
             bspot = win.find_brightest(frame)
             win.show_spot(cam.label, frame, bspot)
             cam.prev = frame
+        '''
 
         key_hit = None
+        DELAY_FRAMES = 5
+
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
-            for cam, frame in (left, lframe), (right, rframe):
-
-                #diff = compare(cam.prev, frame, kompar)
-                #cv2.imshow(cam.label+' diff', diff)
-
-                #show the difference in consecutive frames for each camera
-                diff = numpy.abs(frame.astype(numpy.int8) - cam.prev.astype(numpy.int8)).astype(numpy.uint8)
-                cv2.imshow(cam.label+' diff', diff)
-
-                cam.prev = frame
-
-                #find brightest point, show it on current frame
-                bspot = win.find_brightest(frame)
-                win.show_spot(cam.label, frame, bspot)
+            _, nirframe = nir.cap.read()
 
             print(win.calc_depth(win.find_brightest(lframe), win.find_brightest(rframe), BASELINE), 'meters')
 
             key_hit = cv2.waitKey(1)
             if key_hit == 32:
-                _, lframe = left.cap.read()
-                _, rframe = right.cap.read()
 
-                for cam in left, right:
-                    metadata_entry = {}
-                    metadd(metadata_entry, cam.label, DATA_DIR, im_count)
-                    metadata[im_count] = metadata_entry
+                metadata_entry = {left.label:{'img_paths':[]}, right.label:{'img_paths':[]}, nir.label:{'img_paths':[]}}
+                for frame_count in range(4):
+                    _, lframe = left.cap.read()
+                    _, rframe = right.cap.read()
+                    _, nirframe = nir.cap.read()
 
-                im_count += 1
+                    for cam, frame in (left, lframe), (nir, nirframe), (right, rframe):
+                        #path will be something like "data/dataset/45_2_left.jpg"
+                        img_path = os.path.join(DATA_DIR, "{}_{}_{}.jpg".format(str(exp_count), str(frame_count), cam.label))
+                        print(img_path)
+                        #enter path in metadata as dictionary value for the stream(left, right or nir)
+                        metadata_entry[cam.label]["img_paths"].append(img_path)
+
+                        #actually save frame to file
+                        cv2.imwrite(img_path, frame)
+                        print('wrote ', img_path, frame_count)
+
+                    for _ in range(DELAY_FRAMES):
+                        _, _ = left.cap.read()
+                        _, _ = right.cap.read()
+                        _, _ = nir.cap.read()
+
+                metadata[exp_count] = metadata_entry
+                exp_count += 1
+
+            for cam, frame in (left, lframe), (right, rframe), (nir, nirframe):
+
+                #diff = compare(cam.prev, frame, kompar)
+                #cv2.imshow(cam.label+' diff', diff)
+
+                '''
+                #show the difference in consecutive frames for each camera
+                diff = numpy.abs(frame.astype(numpy.int8) - cam.prev.astype(numpy.int8)).astype(numpy.uint8)
+                cv2.imshow(cam.label+' diff', diff)
+
+                cam.prev = frame
+                '''
+
+                #find brightest point, show it on current frame
+                bspot = win.find_brightest(frame)
+                win.show_spot(cam.label, frame, bspot)
 
     with open(metadata_path, 'wb') as metadataf:
         pickle.dump(metadata, metadataf)
