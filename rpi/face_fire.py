@@ -6,7 +6,8 @@ import pdb
 
 
 if __name__ == "__main__":
-    HOST = input('IP of remote: ')
+    #HOST = input('IP of remote: ')
+    HOST = "192.168.43.250"
     PORT = 3030
 
     robot = motion.Robot(name='FireBot')
@@ -18,6 +19,7 @@ if __name__ == "__main__":
         curang = 95.0
 
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.settimeout(1.5)
             print('connected')
             while True:
                 try:
@@ -30,6 +32,7 @@ if __name__ == "__main__":
                     print(shft)
                 except socket.timeout as e:
                     print(e)
+                    continue
                 except socket.error as e:
                     print(e)
                     sys.exit()
@@ -37,9 +40,9 @@ if __name__ == "__main__":
                     print(shft)
                     continue
                 else:
-                    curang -= shft
+                    curang = shft
                     robot.pan.turn(curang)
-                    sleep(0.6)
+                    sleep(0.2)
 
     finally:
         robot.left.close()
