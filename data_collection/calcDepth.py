@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
-import os
-import pickle
-import sys
+import os, sys, pickle
+import csv
 import matplotlib.pyplot as plt
 
 #takes 2 coords as tuples in the form (x, y), baseline in the units desired, focl in pixels
@@ -29,7 +28,7 @@ def calcDepth(baseline, focl, lcoords, rcoords, rldepth):
     return rlfocl,(baseline*avg_est_focl)/disp
 
 if __name__ == "__main__":
-    DATA_DIR = './data/gucco'
+    DATA_DIR = sys.argv[1]
 
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
     #load metadata
@@ -55,16 +54,17 @@ if __name__ == "__main__":
     xs = []
     ys = []
     ys1 = []
-    for pairNum in range(77, len(metadata.keys())):
+    for pairNum in range(len(metadata.keys())):
         paird = metadata[pairNum]
         #just assuming one fire for now
         lcoords = paird['left']['coords'][0]
         rcoords = paird['right']['coords'][0]
+        nircoords
         print('left ', lcoords, '\tright ', rcoords)
 
         #baseline = float(input('How far are the cameras\' lens centers? Answer in the units you would like the depth in.\t'))
         #baseline = 26.4 #cm
-        baseline = 43.6 #cm
+        baseline = 35.9 #cm
 
         #CALIB_PATH = "./calibration/camMtx.npy"
         #if os.path.isfile(CALIB_PATH):

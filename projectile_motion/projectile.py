@@ -20,6 +20,8 @@ def calc_init_vel(vol=901, time=6.04, outer_dia=7.1, inner_dia=6.45):
     vi = flow_rate/opening_area
     return vi
 
+#def calc_init_vel(angle, hdisp, both):
+
 class Projectile():
     #measured flow rate with timer and grad cylinder, measured radius of nozzle with calipers
     vi = calc_init_vel(901, 6.04, 7.1, 6.45)
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     DATA_PATH = "projectile_experimental.csv"
     #load experimental data from spreadsheet
     experi_dat = load_dat(DATA_PATH)
-    plt_graph(experi_dat[0], experi_dat[1], 'bo', 'experimental')
+    plt_graph([-ang for ang in experi_dat[0]], experi_dat[1], 'bo', 'experimental')
 
     Projectile.hi = float(input('Initial height lauched from in cm: '))/100.0
 
@@ -98,10 +100,10 @@ if __name__ == "__main__":
     print('tilt angle range assumed to be -20 to 25 degrees')
 
     #calculate horiz disp for projectiles at a lot of initial angles
-    projs = [Projectile(angle, 0) for angle in angles]
+    projs = [Projectile(angle, 0) for angle in angles[::-1]]
     hdisps = [proj.calc_hdisp() for proj in projs]
 
     #plot the graph
-    plt_graph(angles, hdisps, label='prediction')
+    plt_graph(angles[6:], hdisps[6:], label='prediction')
 
     plt.show()

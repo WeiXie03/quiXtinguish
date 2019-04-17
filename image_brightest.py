@@ -1,14 +1,24 @@
 import cv2
 import os, sys
-import brightest as fire
 
 class Window():
     def __init__(self, name='fire detection'):
         self.name = name
         self.win = cv2.namedWindow(self.name)
 
+    def find_brightest(self, img, radius):
+        #convert to greyscale
+        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        grey = cv2.GaussianBlur(grey, (radius, radius), 0)
+        #use Gaussian blur to average out everything and supress random bright spots(eg. lights)
+        (min_val, max_val, min_loc, max_loc) = cv2.minMaxLoc(grey)
+        #circle the spot
+
+        return max_loc
+
     def show_fire(self, img, radius=5):
-        bspot = fire.find_brightest(img, radius)
+        bspot = self.find_brightest(img, radius)
         print(bspot)
         #show brightest spot, bspot is pair of coords
         cv2.circle(img, bspot, radius, (100, 80, 80), 2)

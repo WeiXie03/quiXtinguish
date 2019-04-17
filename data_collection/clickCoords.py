@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-import pickle
+import os, sys, pickle
+import pprint
 import pdb
-import os
-import sys
 
 #pdb.set_trace()
 
@@ -56,7 +55,9 @@ if __name__ == "__main__":
     right = Camera('right')
     nir = Camera('NoIR')
 
-    print(metadata)
+    pprint.pprint(metadata[0])
+    print('\n', 3*'\t', '...\n')
+    pprint.pprint(metadata[len(metadata.keys())-1])
 
     imNum = None
     while(True):
@@ -70,10 +71,11 @@ if __name__ == "__main__":
         paird = metadata[imNum]
 
         for src in (left, right, nir):
-            paird[src.side]['coords'] = {}
+            #paird[src.side]['coords'] = ()
 
-            img_path = paird[src.side]['img_path']
-            src.img = cv2.imread(img_path) #get img_path from metadata
+            img_path = paird[src.side]['img_paths'][0]
+            #save first of consecutive frames as image for each camera
+            src.img = cv2.imread(os.path.join('/home/wei/Public/quiXtinguish', img_path)) #get img_path from metadata
 
         #print('Look at how many fires there are.')
         #cv2.imshow("both", np.hstack((left.img[::2, ::2],right.img[::2, ::2])))
@@ -92,10 +94,11 @@ if __name__ == "__main__":
                 cv2.imshow(src.side, src.img)
                 mx,my = waitClick(src)
                 #store coordinates as values to index keys, will store points of corresponding left right images with same key
-                paird[src.side]['coords'][index] = (mx, my)
+                #paird[src.side]['coords'][index] = (mx, my)
+                paird[src.side]['coords'] = (mx, my)
 
         metadata[int(imNum)] = paird
-        print(paird)
+        pprint.pprint(paird)
 
         #save to duplicate
         with open(metadata_path+'e', 'wb') as metadataf:
@@ -123,7 +126,7 @@ if __name__ == "__main__":
         metadata[imNum] = writeIntri(metadata[imNum], baseline, focl, disparity, est_depth)
 
     '''
-    print(metadata)
+    pprint.pprint(metadata)
     if input('Would you like to save to file?[y/n]: ') == 'y':
         with open(metadata_path, 'wb') as metadataf:
             pickle.dump(metadata, metadataf)
