@@ -13,6 +13,6 @@ echo right cam port=5800
 RPORT=5800
 
 #Forwarding a gstream and sending one from an 3rd party RPi NoIR Camera Module
-raspivid -n -t 0 -b 3000000 -fps 18 -w 640 -h 480 -cd MJPEG -o - | gst-launch-1.0 fdsrc ! jpegparse ! rtpjpegpay pt=96 ! udpsink host=$HOST port=$RPORT &
+raspivid -n -t 0 -b 3000000 -fps 18 -w 640 -h 480 -rot 90 -cd MJPEG -o - | gst-launch-1.0 fdsrc ! jpegparse ! rtpjpegpay pt=96 ! udpsink host=$HOST port=$RPORT &
 
 gst-launch-1.0 udpsrc port=$LPORT ! udpsink host=$HOST port=$LPORT
