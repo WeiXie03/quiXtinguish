@@ -1,35 +1,15 @@
-import numpy
-import cv2
-import os, sys
-import pickle
+import numpy, cv2
+import os, sys, pickle
 from enum import Enum
+import recvid_multipi as recvid
 
-class Codec(Enum):
-    MJPEG=0
-    MJPG=0
-    JPEG=0
-    JPG=0
-    H264=1
-    X264=1
+class Stream(recvid.Cam):
+    def __init__(self, port, name, calib_data, codec=recvid.Codec.MJPEG, make_win=True):
+        self.name = name
+        super().__init__(port, name, codec, make_win)
 
-class Cam():
-    def __init__(self, port, label, codec=Codec.MJPEG, make_win=True):
-        self.label = label
-
-        print(codec)
-        if codec == Codec.H264:
-            #get gStreamer stream from RPi on UDP, video is mjpeg, using rtp
-            self.cap = cv2.VideoCapture('udpsrc port={} ! application/x-rtp,payload=96,media=video,encoding-name=H264 ! rtph264depay ! decodebin ! videoconvert ! appsink'.format(port), cv2.CAP_GSTREAMER)
-        elif codec == Codec.MJPEG:
-            #same as above, but using MJPEG
-            self.cap = cv2.VideoCapture("udpsrc port={} ! application/x-rtp, encoding-name=JPEG, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink".format(port), cv2.CAP_GSTREAMER)
-        print(self.cap)
-
-        if make_win:
-            self.win = cv2.namedWindow(self.label, cv2.WINDOW_OPENGL)
-
-    def __repr__(self):
-        return 'stream of {} camera, receiving stream through {}'.format(self.label, self.cap)
+        #load calibration data
+        self.dataset = calib_data
 
 if __name__ == "__main__":
     print('data directory is command line argument after this python program\'s name')
