@@ -3,18 +3,29 @@ import os, pickle, sys
 import matplotlib.pyplot as plt
 from scipy import optimize
 
+def load_foclx(calib_path):
+    '''
+    Averages x focal length of left and right cameras stored in calibrated settings
+    '''
+    lcalib = numpy.load(os.path.join(calib_path, 'calib_settings_left.npy'))
+    rcalib = numpy.load(os.path.join(calib_path, 'calib_settings_right.npy'))
+
+    foclx = (lcalib[0][0][0] + rcalib[0][0][0])/2
+    return foclx
+
 def calc_depth(disps, focl, bias):
-    return numpy.reciprocal(disps+bias) * (39.5/10**2)*focl
+    return numpy.reciprocal(disps+bias) * (21.85/100)*focl
 
 if __name__ == "__main__":
     DATA_DIR = sys.argv[1]
-    CALIB_MTX = numpy.load(os.path.join(sys.argv[2]))
+    CALIB_DIR = sys.argv[2]
 
-    BASELINE = 39.5/10**2
+    BASELINE = 21.85/100
     print('baseline = {} meters'.format(BASELINE))
-    CAM_HEIGHT = 17.1/10**2 #meters
+    CAM_HEIGHT = 14.0/100 #meters
+    FOCLX = load_foclx(CALIB_DIR)
 
-    metadata_path = os.path.join(DATA_DIR, 'metadata.dat2')
+    metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
     with open(metadata_path, 'rb') as metadataf:
         metadata = pickle.load(metadataf)
 
@@ -22,26 +33,33 @@ if __name__ == "__main__":
     depths = []
     dists = []
     disps = []
-    for tripnum in range(len(metadata.keys())):
-        depth = metadata[tripnum]['real depth']
-        depths.append(depth)
+    for pairnum in range(len(metadata.keys())):
+        #depth = metadata[pairnum]['real depth']
+        #depths.append(depth)
 
-        height = metadata[tripnum]['fire height from ground']/10**2 - CAM_HEIGHT
+        #height = metadata[pairnum]['fire height from ground']/10**2 - CAM_HEIGHT
         #pythag: distance = sqrt(depth^2 + (fire height - camera height)^2)
-        dist = (depth**2+height**2)**0.5
-        dists.append(dist)
+        #dist = (depth**2+height**2)**0.5
+        #dists.append(dist)
 
-        disp = abs(metadata[tripnum]['left']['coords'][0]-metadata[tripnum]['right']['coords'][0])
-        disps.append(disp)
+        try:
+            disp = metadata[pairnum]['left']['coords'][0]-metadata[pairnum]['right']['coords'][0]
+        except TypeError:
+            print('potentially no fires in image(s)')
+            continue
+        else:
+            disps.append(disp)
 
-        estdepth = (BASELINE*CALIB_MTX[0][0])/disp
+            estdepth = (BASELINE*FOCLX)/disp
+            print(pairnum, ':', estdepth, 'meters')
 
-        err = math.fabs(estdepth - depth)
-        errs.append(err)
+        #err = math.fabs(estdepth - depth)
+        #errs.append(err)
 
     disps = numpy.asarray(disps).astype(numpy.float)
     recip_disps = numpy.reciprocal(disps)
 
+    '''
     print('erros in cm', errs, ', distances', depths)
     #plt.plot(recip_disps, dists, 'bo')
     plt.plot(disps, depths, 'bo', label='Experimental')
@@ -57,7 +75,6 @@ if __name__ == "__main__":
     plt.title('Depth of Fire vs Disparity of Corresponding Points on Stereo Images Representing Fire')
     plt.legend()
 
-    '''
     #fit a reciprocal function
     xs = numpy.linspace(disps[0], disps[-1], len(depths))
     #print(xs, depths)

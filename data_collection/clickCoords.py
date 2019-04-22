@@ -3,6 +3,7 @@ import numpy as np
 import os, sys, pickle
 import pprint
 import pdb
+from calibration import stereo_calib as stercal
 
 #pdb.set_trace()
 
@@ -20,7 +21,9 @@ def clicked(event, x, y, flags, param):
         coord_dict["x"] = x
         coord_dict["y"] = y
         print('selected')
-        disp_img = cv2.circle(src.img, (x,y), 4, (0,14,231), 1)
+
+        #draw cross to mark click
+        disp_img = cv2.drawMarker(src.img, (x,y), (214, 126, 12), cv2.MARKER_TILTED_CROSS, 10, 2)
         cv2.imshow(src.side, disp_img)
 
 def waitClick(src):
@@ -36,9 +39,19 @@ def waitClick(src):
             sys.exit()
     return coord_dict['x'], coord_dict['y']
 
+def load_calib(calib_path):
+    (lmtx, ldist) = np.load(os.path.join(calib_path, 'calib_settings_left.npy'))[:2]
+    (rmtx, rdist) = np.load(os.path.join(calib_path, 'calib_settings_right.npy'))[:2]
+    (rot, trans) = np.load(os.path.join(calib_path, 'calib_settings_stereo.dat'))[:2]
+
+    return lmtx, rmtx, ldist, rdist, rot, trans
+
 if __name__ == "__main__":
     print('data directory is command line argument after this python program\'s name')
     DATA_DIR = sys.argv[1]
+    CALIB_DIR = sys.argv[2]
+
+    lmtx, rmtx, ldist, rdist, rot, trans = load_calib(CALIB_DIR)
 
     #load the metadata
     metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
@@ -53,7 +66,6 @@ if __name__ == "__main__":
     #get the image pair the user wants
     left = Camera('left')
     right = Camera('right')
-    nir = Camera('NoIR')
 
     pprint.pprint(metadata[0])
     print('\n', 3*'\t', '...\n')
@@ -70,12 +82,15 @@ if __name__ == "__main__":
 
         paird = metadata[imNum]
 
-        for src in (left, right, nir):
-            #paird[src.side]['coords'] = ()
+        #paird[src.side]['coords'] = ()
 
-            img_path = paird[src.side]['img_paths'][0]
-            #save first of consecutive frames as image for each camera
-            src.img = cv2.imread(os.path.join('/home/wei/Public/quiXtinguish', img_path)) #get img_path from metadata
+        limg_path = paird[left.side]['img_path']
+        rimg_path = paird[right.side]['img_path']
+        #save first of consecutive frames as image for each camera
+        limg = cv2.imread(os.path.join(limg_path)) #get img_path from metadata
+        rimg = cv2.imread(os.path.join(rimg_path))
+
+        left.img, right.img = stercal.sterectify(lmtx, ldist, rmtx, rdist, rot, trans, limg, rimg)
 
         #print('Look at how many fires there are.')
         #cv2.imshow("both", np.hstack((left.img[::2, ::2],right.img[::2, ::2])))
@@ -87,9 +102,7 @@ if __name__ == "__main__":
 
         print('Click on a fire in the image. When you are done, a window will pop up for you to select the corresponding point on the other image.')
         for index in range(numFires):
-            for src in (left, right, nir):
-                #create new image field of wrappers
-
+            for src in left, right:
                 #load image into window, get number of fires from user
                 cv2.imshow(src.side, src.img)
                 mx,my = waitClick(src)

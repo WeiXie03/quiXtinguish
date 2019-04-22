@@ -36,11 +36,11 @@ def rectify(camMtx, distcos, rot, proj, img):
     returns an undistortion of image img given the camera's intrinsics
     '''
     h, w = img.shape[:2]
-    print('in rectify, before actual rectification', img.shape)
+    #print('in rectify, before actual rectification', img.shape)
     mapx, mapy = cv2.initUndistortRectifyMap(cameraMatrix=camMtx, distCoeffs=distcos, R=rot, newCameraMatrix=proj, size=(w,h), m1type=5)
 
     undistim = cv2.remap(img, mapx, mapy, cv2.INTER_LINEAR)
-    print('in rectify after rectification', undistim.shape)
+    #print('in rectify after rectification', undistim.shape)
 
     return undistim
 
@@ -49,17 +49,17 @@ def sterectify(lmtx, ldist, rmtx, rdist, rot, trans, limg, rimg):
     Returns both corrected stereo images as ndarrays,
     Each data arg is a calibration dataset(attribute of ImSources)
     '''
-    print('rot mtx', rot, ', trans vect', trans)
+    #print('rot mtx', rot, ', trans vect', trans)
 
     h, w = limg.shape[:2]
-    print('in sterectify, before', rimg.shape)
+    #print('in sterectify, before', rimg.shape)
     #calculating rectification settings
     lrot, rrot, lproj, rproj, Q, lvalidROI, rvalidROI = cv2.stereoRectify(cameraMatrix1=lmtx, distCoeffs1=ldist, cameraMatrix2=rmtx, distCoeffs2=rdist, imageSize=(w,h), R=rot, T=trans, alpha=0, newImageSize=(0,0))
 
     #undistort images using same camera parameters from stereoRectify()
     finlimg = rectify(lmtx, ldist, lrot, lproj, limg)
     finrimg = rectify(rmtx, rdist, rrot, rproj, rimg)
-    print('in sterectify, after', finrimg.shape)
+    #print('in sterectify, after', finrimg.shape)
 
     return finlimg, finrimg
 
