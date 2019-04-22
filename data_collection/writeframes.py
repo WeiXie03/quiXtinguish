@@ -66,8 +66,10 @@ if __name__ == "__main__":
         _, framer = streamr.cap.read()
         _, frame_nir = stream_nir.cap.read()
 
-        stc = numpy.hstack((framel, framer))
-        cv2.imshow('left', stc)
+        #stc = numpy.hstack((framel, framer))
+        cv2.imshow('left', framel)
+        cv2.imshow('right', framer)
+        cv2.imshow('NoIR', frame_nir)
 
         key_hit = cv2.waitKey(1)
         if key_hit == 32: #space bar

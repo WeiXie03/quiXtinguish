@@ -51,7 +51,7 @@ if __name__ == "__main__":
         lcam = writeframes.Cam(5000, 'left')
         rcam = writeframes.Cam(5200, 'right')
         '''
-        curServoAngles = (90.0, 90.0)
+        curServoAngles = [90.0, 90.0]
         while True:
             try:
                 data = sock.recv(1024).decode()
