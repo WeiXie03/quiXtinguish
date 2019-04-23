@@ -1,6 +1,8 @@
 import os, sys, pickle
 import cv2, numpy
 
+#NOTE: this program is DEPRECATED, calculating depth in plt_stereo_err
+
 def load_meta(metapath):
     with open(os.path.join(metapath), 'rb') as metaf:
         metadata = pickle.load(metaf)
@@ -33,5 +35,4 @@ if __name__ == "__main__":
 
     for pairind in len(metadata.keys()):
         paird = metadata[pairind]
-
-
+    #...

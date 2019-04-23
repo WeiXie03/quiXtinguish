@@ -1,7 +1,7 @@
 import numpy, cv2
 import os, sys, pickle
 from enum import Enum
-import data_collection.writeframes as stream
+import data_collection.rectified_cap as rectif
 import click2pan as direc
 import socket
 import math
@@ -127,6 +127,8 @@ if __name__ == "__main__":
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
+            lframe, rframe = rectif.rectify(lframe, rframe)
+
             #print('updated')
 
             key_hit = cv2.waitKey(1)
@@ -200,6 +202,7 @@ if __name__ == "__main__":
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
+            lframe, rframe = rectif.rectify(lframe, rframe)
 
             #stereo vision
             print(win.calc_depth(win.find_brightest(lframe), win.find_brightest(rframe), BASELINE), 'meters')
@@ -211,6 +214,7 @@ if __name__ == "__main__":
                 for frame_count in range(4):
                     _, lframe = left.cap.read()
                     _, rframe = right.cap.read()
+                    lframe, rframe = rectif.rectify(lframe, rframe)
 
                     for cam, frame in (left, lframe), (right, rframe):
                         #path will be something like "data/dataset/45_2_left.jpg"
