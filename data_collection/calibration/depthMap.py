@@ -2,7 +2,7 @@ import numpy
 import cv2
 from matplotlib import pyplot as plt
 import sys, os, pickle
-import stereo_calib as stercal
+import calibration.stereo_calib as stercal
 
 def load_calib(calib_dir_path):
     #calib dir is directory containing all the calibrated settings
@@ -13,6 +13,7 @@ def load_calib(calib_dir_path):
     with open(os.path.join(calib_dir_path, 'calib_settings_stereo.dat'), 'rb') as sterDf:
         sterDset = pickle.load(sterDf)
 
+    #print(len(lDset), len(rDset), len(sterDset))
     return lDset, rDset, sterDset
 
 def gen_dispmap(limg, rimg, mindisp=1, numdisps=256, block=7, speckrange=2, speckwin_size=100):

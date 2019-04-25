@@ -31,35 +31,35 @@ if __name__ == "__main__":
 
     errs = []
     depths = []
-    dists = []
     disps = []
     for pairnum in range(len(metadata.keys())):
-        #depth = metadata[pairnum]['real depth']
-        #depths.append(depth)
-
-        #height = metadata[pairnum]['fire height from ground']/10**2 - CAM_HEIGHT
-        #pythag: distance = sqrt(depth^2 + (fire height - camera height)^2)
-        #dist = (depth**2+height**2)**0.5
-        #dists.append(dist)
-
         try:
+            depth = metadata[pairnum]['real depth']
+
+            height = metadata[pairnum]['fire height from ground']/10**2 - CAM_HEIGHT
+
             disp = metadata[pairnum]['left']['coords'][0]-metadata[pairnum]['right']['coords'][0]
+
+            #err = math.fabs(estdepth - depth)
+        except KeyError:
+            print('potentially no experimental depth and/or height data for set {}, skipping'.format(pairnum))
+
         except TypeError:
             print('potentially no fires in image(s)')
             continue
         else:
+            depths.append(depth)
+
             disps.append(disp)
 
             estdepth = (BASELINE*FOCLX)/disp
             print(pairnum, ':', estdepth, 'meters')
 
-        #err = math.fabs(estdepth - depth)
-        #errs.append(err)
+            #errs.append(err)
 
     disps = numpy.asarray(disps).astype(numpy.float)
     recip_disps = numpy.reciprocal(disps)
 
-    '''
     print('erros in cm', errs, ', distances', depths)
     #plt.plot(recip_disps, dists, 'bo')
     plt.plot(disps, depths, 'bo', label='Experimental')
@@ -70,11 +70,13 @@ if __name__ == "__main__":
     #fit straight line
     xs = numpy.linspace(disps[0], disps[-1], len(depths))
     m, b = numpy.polyfit(recip_disps, depths, 1)
+    print('f(x) = {}x + {}'.format(m, b))
     plt.plot(xs, m*numpy.reciprocal(xs)+b, 'r-', label='Theoretical')
 
     plt.title('Depth of Fire vs Disparity of Corresponding Points on Stereo Images Representing Fire')
     plt.legend()
 
+    '''
     #fit a reciprocal function
     xs = numpy.linspace(disps[0], disps[-1], len(depths))
     #print(xs, depths)

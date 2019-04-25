@@ -1,6 +1,8 @@
 import os, sys, pickle
 import cv2, numpy
 
+#NOTE: this program is DEPRECATED, calculating depth in plt_stereo_err
+
 def load_meta(metapath):
     with open(os.path.join(metapath), 'rb') as metaf:
         metadata = pickle.load(metaf)
@@ -18,7 +20,7 @@ def load_foclx(calib_path):
 
 def estdepth(baseline, foclx, lcoords, rcoords):
     lx, rx = lcoords[0], rcoords[0]
-    estdepth = (baseline*foclx)/(lx-rx)
+    estdepth = (baseline*foclx)/(lx-rx) - 0.5816505235602084
     return estdepth
 
 if __name__ == "__main__":
@@ -33,5 +35,8 @@ if __name__ == "__main__":
 
     for pairind in len(metadata.keys()):
         paird = metadata[pairind]
+        lcoord, rcoord = paird['left']['coords'], paird['right']['coords']
 
-
+        #estimate depth
+        depth = estdepth(BASELINE, load_foclx(CALIB_DIR), lcoord, rcoord)
+        print('pair index {}\n\tfire depth = {}'.format(pairind, depth))

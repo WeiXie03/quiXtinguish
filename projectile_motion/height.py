@@ -11,15 +11,15 @@ def calc_height(dist, ycoord, imgh, camh, focl):
 if __name__ == "__main__":
     DATA_DIR = sys.argv[1]
     print('hm')
-    CALIB_MTX = numpy.load(os.path.join(sys.argv[2]))
+    CALIB_DIR = numpy.load(os.path.join(sys.argv[2]))
     print('hm1')
 
-    BASELINE = 39.5/10**2
+    BASELINE = 21.85/10**2
     print('baseline = {} meters'.format(BASELINE))
-    CAM_HEIGHT = 17.1/10**2 #meters
+    CAM_HEIGHT = 14.4/10**2 #meters
     IMG_HEIGHT = 480
 
-    metadata_path = os.path.join(DATA_DIR, 'metadata.dat2')
+    metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
     print('hm2')
     with open(metadata_path, 'rb') as metadataf:
         metadata = pickle.load(metadataf)

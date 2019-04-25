@@ -21,7 +21,7 @@ class Window():
         bspot = self.find_brightest(img, radius)
         print(bspot)
         #show brightest spot, bspot is pair of coords
-        cv2.circle(img, bspot, radius, (100, 80, 80), 2)
+        cv2.circle(img, bspot, radius, (237, 223, 68), 2)
 
         #update window with image whose fire is circled
         cv2.imshow(self.name, img)
