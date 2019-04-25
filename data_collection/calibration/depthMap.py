@@ -13,6 +13,7 @@ def load_calib(calib_dir_path):
     with open(os.path.join(calib_dir_path, 'calib_settings_stereo.dat'), 'rb') as sterDf:
         sterDset = pickle.load(sterDf)
 
+    #print(len(lDset), len(rDset), len(sterDset))
     return lDset, rDset, sterDset
 
 def gen_dispmap(limg, rimg, mindisp=1, numdisps=256, block=7, speckrange=2, speckwin_size=100):

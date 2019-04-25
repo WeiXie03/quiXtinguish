@@ -1,5 +1,5 @@
 import os, sys, pickle, pprint
-import numpy
+import csv
 
 def ins_meta(rldepth, fire_height, ind, metadata):
     metadata[ind]['real depth'] = rldepth
@@ -15,22 +15,26 @@ if __name__ == "__main__":
     with open(metadata_path, 'rb') as metadataf:
         metadata = pickle.load(metadataf)
 
-    dat = numpy.loadtxt(sprdsht_path, delimiter=",")
-    #dat will be a 2d array, with each subarray as a row
-    for row in dat:
+    with open(sprdsht_path) as sprdshtf:
+        reader = csv.reader(sprdshtf, delimiter=',')
 
-        #assign the three columns for each row
-        ind = row[0]
-        depth = row[1]
-        fireh = row[2]
+        #dat will be a 2d array, with each subarray as a row
+        for row in reader:
+            #NOTE: spreadsheet should NOT have column headers
 
-        ins_meta(depth, fireh, ind, metadata)
+            #assign the three columns for each row
+                ind = int(row[0])
+                depth = float(row[1])
+                fireh = float(row[2])
 
+                ins_meta(depth, fireh, ind, metadata)
+
+    print('\n')
     pprint.pprint(metadata)
     dec = input('Would you like to save to file?[y/n]: ')
     if dec == 'y':
-        with open(metadata_path+'2', 'wb') as metadataf:
+        with open(metadata_path, 'wb') as metadataf:
             pickle.dump(metadata, metadataf)
-        print('saved to', metadata_path+'2')
+        print('saved to', metadata_path)
     else:
         print('okie')

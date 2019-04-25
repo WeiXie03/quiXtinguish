@@ -3,14 +3,15 @@ import os, sys, pickle
 from enum import Enum
 import data_collection.rectified_cap as rectif
 import click2pan as direc
+import data_collection.recvid_multipi as stream
+import data_collection.calcDepth as depthest
+import projectile_motion.projectile as projectile
 import socket
 import math
 from time import sleep
 
 class Window():
-    def __init__(self, cam_mtx, angle_step=0.5, srch_rad=29):
-        self.cam_mtx = cam_mtx
-
+    def __init__(self, calib_dir_path, angle_step=0.5, srch_rad=29):
         self.radius = srch_rad
         self.angstep = angle_step
 
@@ -57,12 +58,25 @@ class Window():
             return 0
 
     def calc_depth(self, lcoords, rcoords, baseline):
-        foclx = self.cam_mtx[0][0]
-        print('focal len', foclx)
+        #print('focal len', self.foclx)
         x_l, x_r = lcoords[0], rcoords[0]
-        print(x_l-x_r)
-        depth = (baseline*foclx)/(x_l-x_r)
+        print('disparity', x_l-x_r)
+
+        #from fitting to data
+        depth = (baseline*(249.51078534031404/0.2185))/(x_l-x_r) - 0.5816505235602084
+
         return depth
+
+def calc_tilt(depth):
+    angles = [angle for angle in range(25, -21, -1)]
+    projs = [projectile.Projectile(angle, 0) for angle in angles]
+    hdisps = [proj.calc_hdisp() for proj in projs]
+
+    for hdisp in hdisps:
+        if abs(hdisp-depth) <= 1.5: #meters
+            print('good enough')
+            print('angle=', 90+angles[hdisps.index(hdisp)])
+            return 90+angles[hdisps.index(hdisp)]
 
 def compare(prev, cur, subtractor):
     prevmask = subtractor.apply(prev)
@@ -98,7 +112,8 @@ if __name__ == "__main__":
     print('data directory, calibrated mtx path are command line args')
     DATA_DIR = sys.argv[1]
     #radius for the brightest spot search
-    BRIGHT_RADIUS = 29 #pixels
+    #BRIGHT_RADIUS = 29 #pixels
+    BRIGHT_RADIUS = int(input('radius of circle the size of the fire in the image, MUST be odd: '))
     CALIB_PATH = sys.argv[2]
     #HOST = input('IP of RPi: ')
     HOST = "192.168.0.12"
@@ -121,13 +136,13 @@ if __name__ == "__main__":
         sock.setblocking(0)
 
         #create window object
-        win = Window(numpy.load(CALIB_PATH), srch_rad=BRIGHT_RADIUS)
+        win = Window(CALIB_PATH, srch_rad=BRIGHT_RADIUS)
 
         key_hit = None
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
-            lframe, rframe = rectif.rectify(lframe, rframe)
+            lframe, rframe = rectif.rectify(lframe, rframe, CALIB_PATH)
 
             #print('updated')
 
@@ -144,7 +159,7 @@ if __name__ == "__main__":
                 cur_ang = float(cur_ang.decode())
                 print(cur_ang)
             except BlockingIOError as e:
-                print(e)
+                #print(e)
                 continue
             except ValueError:
                 print(ValueError)
@@ -152,8 +167,8 @@ if __name__ == "__main__":
             else:
                 #calculate and send angle to pan to to RPi
 
-                if abs(lspot[0] - rspot[0]) < 5:
-                    print('good enough')
+                if abs((lframe.shape[1]-lspot[0]) - rspot[0]) < 4:
+                    #print('good enough')
                     break
                 incre = win.cmd_pan(lspot, rspot, lframe.shape[1])
                 print('calculated')
@@ -202,10 +217,14 @@ if __name__ == "__main__":
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
-            lframe, rframe = rectif.rectify(lframe, rframe)
+            lframe, rframe = rectif.rectify(lframe, rframe, CALIB_PATH)
 
             #stereo vision
-            print(win.calc_depth(win.find_brightest(lframe), win.find_brightest(rframe), BASELINE), 'meters')
+            depth = win.calc_depth(win.find_brightest(lframe), win.find_brightest(rframe), BASELINE)
+            #tilting
+            tilt_ang = calc_tilt(depth)
+            sock.sendto(str(tilt_ang).encode(), (HOST, 3027))
+            print('sent tilt to', HOST, 3027)
 
             key_hit = cv2.waitKey(1)
             if key_hit == 32:
@@ -214,7 +233,7 @@ if __name__ == "__main__":
                 for frame_count in range(4):
                     _, lframe = left.cap.read()
                     _, rframe = right.cap.read()
-                    lframe, rframe = rectif.rectify(lframe, rframe)
+                    lframe, rframe = rectif.rectify(lframe, rframe, CALIB_PATH)
 
                     for cam, frame in (left, lframe), (right, rframe):
                         #path will be something like "data/dataset/45_2_left.jpg"
