@@ -76,7 +76,7 @@ def calc_tilt(depth):
         if abs(hdisp-depth) <= 1.5: #meters
             print('good enough')
             print('angle=', 90+angles[hdisps.index(hdisp)])
-            return 90+angles[hdisps.index(hdisp)]
+            return 85+angles[hdisps.index(hdisp)]
 
 def compare(prev, cur, subtractor):
     prevmask = subtractor.apply(prev)
@@ -116,13 +116,15 @@ if __name__ == "__main__":
     BRIGHT_RADIUS = int(input('radius of circle the size of the fire in the image, MUST be odd: '))
     CALIB_PATH = sys.argv[2]
     #HOST = input('IP of RPi: ')
-    HOST = "192.168.0.12"
+    HOST = "192.168.43.16"
     PORT = 3030
 
     BASELINE = 22.2/100.0 #?, TODO: confirm baseline
 
-    left = stream.Cam(5400, 'left')
+    print('connecting')
     right = stream.Cam(5800, 'right')
+    print('connected')
+    left = stream.Cam(5400, 'left')
     print('cameras set up')
 
     #load the metadata, holds img paths and other things in dictionaries
@@ -142,6 +144,9 @@ if __name__ == "__main__":
         while(key_hit != ord('q')):
             _, lframe = left.cap.read()
             _, rframe = right.cap.read()
+            #print(lframe, rframe)
+            if rframe is None or lframe is None:
+                continue
             lframe, rframe = rectif.rectify(lframe, rframe, CALIB_PATH)
 
             #print('updated')
@@ -167,7 +172,7 @@ if __name__ == "__main__":
             else:
                 #calculate and send angle to pan to to RPi
 
-                if abs((lframe.shape[1]-lspot[0]) - rspot[0]) < 4:
+                if abs((lframe.shape[1]-lspot[0]) - rspot[0] - 15) < 7:
                     #print('good enough')
                     break
                 incre = win.cmd_pan(lspot, rspot, lframe.shape[1])
@@ -221,6 +226,7 @@ if __name__ == "__main__":
 
             #stereo vision
             depth = win.calc_depth(win.find_brightest(lframe), win.find_brightest(rframe), BASELINE)
+            print('calculated depth')
             #tilting
             tilt_ang = calc_tilt(depth)
             sock.sendto(str(tilt_ang).encode(), (HOST, 3027))
