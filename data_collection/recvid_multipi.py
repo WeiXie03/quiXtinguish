@@ -22,11 +22,14 @@ class Cam():
             self.cap = cv2.VideoCapture('udpsrc port={} ! application/x-rtp,payload=96,media=video,encoding-name=H264 ! rtph264depay ! decodebin ! videoconvert ! appsink'.format(port), cv2.CAP_GSTREAMER)
         elif codec == Codec.MJPEG:
             #same as above, but using MJPEG
-            self.cap = cv2.VideoCapture("udpsrc port={} ! application/x-rtp, encoding-name=JPEG, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink".format(port), cv2.CAP_GSTREAMER)
+            print(port)
+            self.cap = cv2.VideoCapture("udpsrc port={} ! application/x-rtp, encoding-name=JPEG, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink --verbose".format(port), cv2.CAP_GSTREAMER)
+            #self.cap = cv2.VideoCapture("udpsrc port=15800 ! application/x-rtp, encoding-name=JPEG, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! appsink", cv2.CAP_GSTREAMER)
+            #self.cap = cv2.VideoCapture(0)
         print(self.cap)
 
         if make_win:
-            self.win = cv2.namedWindow(self.label, cv2.WINDOW_OPENGL)
+            self.win = cv2.namedWindow(self.label, cv2.WINDOW_AUTOSIZE)
 
     def __repr__(self):
         return 'stream of {} camera, receiving stream through {}'.format(self.label, self.cap)
