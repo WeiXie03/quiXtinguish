@@ -6,7 +6,7 @@ from testMotion.testMotors import *
 import sys
 
 class Robot():
-    def __init__(self, l_motor_pins=(19,26,13), r_motor_pins=(6,5,0), tilt_pin=24, pan_pin=23, frequency=50, name='robot'):
+    def __init__(self, l_motor_pins=(19,26,13), r_motor_pins=(6,5,0), tilt_pin=24, pan_pin=23, frequency=100, name='robot'):
         self.pi = pig.pi()
         self.name = name
 

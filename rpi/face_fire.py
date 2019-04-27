@@ -6,7 +6,8 @@ import pdb
 
 if __name__ == "__main__":
     #HOST = input('IP of remote: ')
-    HOST = "192.168.0.10"
+    HOST = "192.168.43.250"
+    #HOST = "192.168.0.20"
     PORT = 3030
 
     robot = motion.Robot(name='FireBot')

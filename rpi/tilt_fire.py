@@ -7,9 +7,10 @@ import pdb
 if __name__ == "__main__":
     #HOST = input('IP of remote: ')
     HOST = "192.168.43.250"
+    #HOST = "192.168.0.20"
     PORT = 3027
 
-    robot = motion.Robot(name='FireBot')
+    robot = motion.Robot(name='FireBot', frequency=60)
 
     try:
         print('streaming')
@@ -23,10 +24,10 @@ if __name__ == "__main__":
             print('connected')
             while True:
                 try:
-                    shft, (HOST, PORT) = sock.recvfrom(1024)
+                    des, (HOST, PORT) = sock.recvfrom(1024)
                     print(HOST, PORT)
-                    shft = float(shft.decode())
-                    print(shft)
+                    des = float(des.decode())
+                    print(des)
                 except socket.timeout as e:
                     print(e)
                     continue
@@ -34,15 +35,21 @@ if __name__ == "__main__":
                     print(e)
                     sys.exit()
                 except ValueError:
-                    print(shft)
                     continue
                 else:
                     print('got it')
                     break
 
-            robot.tilt.turn(shft)
-            sleep(3)
-            #sock.sendto(str('done').encode(), (HOST, PORT))
+        #sock.sendto(str('done').encode(), (HOST, PORT))
+        if curang > des:
+            for shft in range(int(abs(des-curang))),int(des)-1, -4):
+                robot.tilt.turn(shft+curang)
+                sleep(0.1)
+        else:
+            for shft in range(int(abs(des-curang)), int(des)+1, 4):
+                robot.tilt.turn(shft+curang)
+                sleep(0.1)
+
 
     finally:
         robot.left.close()
