@@ -116,7 +116,7 @@ if __name__ == "__main__":
     BRIGHT_RADIUS = int(input('radius of circle the size of the fire in the image, MUST be odd: '))
     CALIB_PATH = sys.argv[2]
     #HOST = input('IP of RPi: ')
-    HOST = "192.168.0.12"
+    HOST = "192.168.43.16"
     PORT = 3030
 
     BASELINE = 22.2/100.0 #?, TODO: confirm baseline
@@ -167,7 +167,7 @@ if __name__ == "__main__":
             else:
                 #calculate and send angle to pan to to RPi
 
-                if abs((lframe.shape[1]-lspot[0]) - rspot[0]) < 4:
+                if abs((lframe.shape[1]-lspot[0]) - rspot[0]) < 7:
                     #print('good enough')
                     break
                 incre = win.cmd_pan(lspot, rspot, lframe.shape[1])
