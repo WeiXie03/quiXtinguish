@@ -6,7 +6,8 @@ import pdb
 
 if __name__ == "__main__":
     #HOST = input('IP of remote: ')
-    HOST = "192.168.43.250"
+    #HOST = "192.168.43.250"
+    HOST = "192.168.0.10"
     #HOST = "192.168.0.20"
     PORT = 3030
 
@@ -50,7 +51,9 @@ if __name__ == "__main__":
     finally:
         robot.left.close()
         robot.right.close()
+        robot.pi.set_servo_pulsewidth(robot.pan.pin, 0)
         robot.pi.write(robot.pan.pin, 0)
+        robot.pi.set_servo_pulsewidth(robot.tilt.pin, 0)
         robot.pi.write(robot.tilt.pin, 0)
         robot.pi.stop()
         print(robot.name, 'dead')
