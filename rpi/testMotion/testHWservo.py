@@ -13,7 +13,6 @@ class Servo():
         self.pi.set_mode(self.pin, pig.OUTPUT)
         self.pi.set_PWM_frequency(self.pin, freq)
         print(self.pi.get_PWM_range(self.pin))
-        self.pi.set_PWM_range(self.pin, 40000)
         self.pwm_range = self.pi.get_PWM_range(self.pin)
         self.close()
 
@@ -42,6 +41,7 @@ class Servo():
 
         print('\tpulse width', pulse_wid)
         duty = (pulse_wid/10**6) * self.freq #pulse width is in us, frequency is cyc/s
+        print(duty)
         return duty
 
     def specTurn(self, duty):
@@ -68,23 +68,30 @@ class Servo():
 class hwServo(Servo):
     def __init__(self, pi, pin, freq, min_bound=1000, max_bound=2000):
         super().__init__(pi, pin, freq, min_bound, max_bound)
+
     def specTurn(self, duty):
         #scale to pigpio pwm range set, pigpio only takes ints
         duty = int(duty * self.pwm_range)
         #print('rounded duty for pigpio =', duty)
+        print(duty)
         self.pi.hardware_PWM(self.pin, self.freq, duty) #set default range to 10000
+
+    def turn(self, angle):
+        duty = self.calc_duty(angle)
+        self.specTurn(duty)
+        print('hw turned')
 
 if __name__ == '__main__':
     pi = pig.pi()
     print(pi)
     pin = int(input('Enter the RPi pin number the servo is connected to according to Broadcom\'s numbering.\t'))
-    frequency = 50
-    tilt = Servo(pi, pin, frequency, min_bound=500, max_bound=2500)
+    frequency = 72
+    tilt = hwServo(pi, pin, frequency, min_bound=500, max_bound=2500)
     tilt.close()
     try:
-        for it in range(100):
+        for it in range(150):
             try:
-                angle = float(input('Enter the  you would like the servo horn to turn to in degrees. Range: 0 to 180, 90 = neutral.\t'))
+                angle = float(input('Enter the angle you would like the servo horn to turn to in degrees. Range: 0 to 180, 90 = neutral.\t'))
                 tilt.turn(angle)
             except:
                 raise
