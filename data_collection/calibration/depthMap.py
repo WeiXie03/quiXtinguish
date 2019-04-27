@@ -1,14 +1,14 @@
 import numpy
 import cv2
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 import sys, os, pickle
-import calibration.stereo_calib as stercal
+import data_collection.calibration.stereo_calib as stercal
 
 def load_calib(calib_dir_path):
     #calib dir is directory containing all the calibrated settings
 
-    lDset = numpy.load(os.path.join(calib_dir_path, 'calib_settings_left.npy'))
-    rDset = numpy.load(os.path.join(calib_dir_path, 'calib_settings_right.npy'))
+    lDset = numpy.load(os.path.join(calib_dir_path, 'calib_settings_left.npy'), allow_pickle=True)
+    rDset = numpy.load(os.path.join(calib_dir_path, 'calib_settings_right.npy'), allow_pickle=True)
     #stereo saved in pickle file
     with open(os.path.join(calib_dir_path, 'calib_settings_stereo.dat'), 'rb') as sterDf:
         sterDset = pickle.load(sterDf)
