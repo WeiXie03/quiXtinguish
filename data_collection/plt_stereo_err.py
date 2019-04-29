@@ -2,6 +2,7 @@ import numpy, math
 import os, pickle, sys
 import matplotlib.pyplot as plt
 from scipy import optimize
+import height as hei
 
 def load_foclx(calib_path):
     '''
@@ -32,7 +33,8 @@ if __name__ == "__main__":
     errs = []
     depths = []
     disps = []
-    for pairnum in range(len(metadata.keys())):
+    #for pairnum in range(len(metadata.keys())):
+    for pairnum in range(478):
         try:
             depth = metadata[pairnum]['real depth']
 
@@ -41,6 +43,7 @@ if __name__ == "__main__":
             disp = metadata[pairnum]['left']['coords'][0]-metadata[pairnum]['right']['coords'][0]
 
             #err = math.fabs(estdepth - depth)
+
         except KeyError:
             print('potentially no experimental depth and/or height data for set {}, skipping'.format(pairnum))
 
@@ -73,7 +76,9 @@ if __name__ == "__main__":
     print('f(x) = {}x + {}'.format(m, b))
     plt.plot(xs, m*numpy.reciprocal(xs)+b, 'r-', label='Theoretical')
 
-    plt.title('Depth of Fire vs Disparity of Corresponding Points on Stereo Images Representing Fire')
+    print('root mean squared error =', hei.rmse(m*numpy.reciprocal(disps)+b, depths))
+
+    plt.title('Depth of Fire vs Disparity of Corresponding Points on Stereo Images')
     plt.legend()
 
     '''

@@ -4,7 +4,7 @@ import csv
 def ins_meta(rldepth, fire_height, ind, metadata):
     metadata[ind]['real depth'] = rldepth
     metadata[ind]['fire height from ground'] = fire_height
-    pprint.pprint(metadata[ind])
+    #pprint.pprint(metadata[ind])
 
 if __name__ == "__main__":
     DATA_DIR = sys.argv[1]
@@ -23,14 +23,17 @@ if __name__ == "__main__":
             #NOTE: spreadsheet should NOT have column headers
 
             #assign the three columns for each row
-                ind = int(row[0])
-                depth = float(row[1])
-                fireh = float(row[2])
+            start = int(row[0])
+            end = int(row[1])
+            depth = float(row[2])
+            fireh = float(row[3])
+            print(fireh)
 
+            for ind in range(start, end+1):
                 ins_meta(depth, fireh, ind, metadata)
 
     print('\n')
-    pprint.pprint(metadata)
+    #pprint.pprint(metadata)
     dec = input('Would you like to save to file?[y/n]: ')
     if dec == 'y':
         with open(metadata_path, 'wb') as metadataf:

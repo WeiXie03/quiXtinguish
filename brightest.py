@@ -78,6 +78,7 @@ def calc_tilt(depth):
             print('angle=', 88+angles[hdisps.index(hdisp)])
             return 88+angles[hdisps.index(hdisp)]
 
+
 def compare(prev, cur, subtractor):
     prevmask = subtractor.apply(prev)
     curmask = subtractor.apply(cur)
@@ -111,14 +112,17 @@ def metadd(meta_entry, stream_name, datadir, imgind, frame):
 if __name__ == "__main__":
     print('data directory, calibrated mtx path are command line args')
     DATA_DIR = sys.argv[1]
+    CALIB_PATH = sys.argv[2]
+
     #radius for the brightest spot search
     #BRIGHT_RADIUS = 29 #pixels
     BRIGHT_RADIUS = int(input('radius of circle the size of the fire in the image, MUST be odd: '))
-    CALIB_PATH = sys.argv[2]
+
     #HOST = input('IP of RPi: ')
     #HOST = "192.168.43.16"
     HOST = "192.168.0.12"
-    PORT = 3030
+    PAN_PORT = 3030
+    TILT_PORT = 3027
 
     BASELINE = 22.2/100.0 #?, TODO: confirm baseline
 
@@ -135,7 +139,7 @@ if __name__ == "__main__":
 
     print('Starting')
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-        sock.bind(('', PORT))
+        sock.bind(('', PAN_PORT))
         sock.setblocking(0)
 
         #create window object
@@ -161,7 +165,7 @@ if __name__ == "__main__":
             #find brightest point, show it on current frame
 
             try:
-                cur_ang, (HOST, PORT) = sock.recvfrom(1024)
+                cur_ang, (HOST, PAN_PORT) = sock.recvfrom(1024)
                 cur_ang = float(cur_ang.decode())
                 print(cur_ang)
             except BlockingIOError as e:
@@ -178,14 +182,14 @@ if __name__ == "__main__":
                     break
                 incre = win.cmd_pan(lspot, rspot, lframe.shape[1])
                 print('calculated')
-                sock.sendto(str(cur_ang+incre).encode(), (HOST, PORT))
-                print('sent to', (HOST, PORT))
+                sock.sendto(str(cur_ang+incre).encode(), (HOST, PAN_PORT))
+                print('sent to', (HOST, PAN_PORT))
 
                 '''
                 print(cur_ang)
                 try:
                     while(True):
-                        cur_ang, (HOST, PORT) = sock.recvfrom(1024)
+                        cur_ang, (HOST, PAN_PORT) = sock.recvfrom(1024)
                         cur_ang = float(cur_ang.decode())
                 except BlockingIOError as e:
                     pass
@@ -230,8 +234,8 @@ if __name__ == "__main__":
             print('calculated depth')
             #tilting
             tilt_ang = calc_tilt(depth)
-            sock.sendto(str(tilt_ang).encode(), (HOST, 3027))
-            print('sent tilt to', HOST, 3027)
+            sock.sendto(str(tilt_ang).encode(), (HOST, TILT_PORT))
+            print('sent tilt to', HOST, TILT_PORT)
 
             key_hit = cv2.waitKey(1)
             if key_hit == 32:
