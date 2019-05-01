@@ -2,7 +2,7 @@ import numpy
 import cv2
 #from matplotlib import pyplot as plt
 import sys, os, pickle
-import data_collection.calibration.stereo_calib as stercal
+import calibration.stereo_calib as stercal
 
 def load_calib(calib_dir_path):
     #calib dir is directory containing all the calibrated settings

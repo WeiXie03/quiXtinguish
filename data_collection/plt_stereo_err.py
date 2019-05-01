@@ -63,9 +63,10 @@ if __name__ == "__main__":
     disps = numpy.asarray(disps).astype(numpy.float)
     recip_disps = numpy.reciprocal(disps)
 
-    print('erros in cm', errs, ', distances', depths)
+    print('depths', depths)
     #plt.plot(recip_disps, dists, 'bo')
     plt.plot(disps, depths, 'bo', label='Experimental')
+    plt.errorbar(disps, depths, None, 4, ecolor='y', elinewidth=1, capthick=10)
 
     plt.xlabel('Disparity(pixels)')
     plt.ylabel('Depth(meters)')
