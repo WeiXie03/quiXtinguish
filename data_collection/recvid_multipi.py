@@ -3,6 +3,7 @@ import cv2
 import os, sys
 import pickle
 from enum import Enum
+import rectified_cap as rectif
 
 class Codec(Enum):
     MJPEG=0
@@ -35,8 +36,9 @@ class Cam():
         return 'stream of {} camera, receiving stream through {}'.format(self.label, self.cap)
 
 if __name__ == "__main__":
-    print('data directory is command line argument after this python program\'s name')
+    print('enter data directory then calibration directory as command line args')
     DATA_DIR = sys.argv[1]
+    CALIB_DIR = sys.argv[2]
 
     streaml = Cam(5400, 'left')
     streamr = Cam(5800, 'right')
@@ -62,6 +64,7 @@ if __name__ == "__main__":
         #want these to happen consecutively
         _, framel = streaml.cap.read()
         _, framer = streamr.cap.read()
+        framel, framer = rectif.rectify(framel, framer, CALIB_DIR)
 
         tog = numpy.hstack((framel, framer))
         cv2.imshow(streaml.label + ',' + streamr.label, tog)
@@ -71,6 +74,7 @@ if __name__ == "__main__":
             # Want these to happen consecutive
             _, framel = streaml.cap.read()
             _, framer = streamr.cap.read()
+            framel, framer = rectif.rectify(framel, framer, CALIB_DIR)
 
             metadata_entry = {}
             for stream, frame  in ((streaml, framel), (streamr, framer)):

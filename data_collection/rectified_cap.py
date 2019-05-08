@@ -1,7 +1,7 @@
 import cv2, numpy as np
 import os, pickle, sys
-import data_collection.calibration.stereo_calib as stercal
-import data_collection.calibration.depthMap as depm
+import calibration.stereo_calib as stercal
+import calibration.depthMap as depm
 
 def rectify(left_imsrc, right_imsrc, calib_path):
     '''
