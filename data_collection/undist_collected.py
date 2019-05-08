@@ -40,11 +40,8 @@ if __name__ == "__main__":
 
         #make entries in metadata
         new_metadata[pairind] = {}
-        new_metadata[pairind]['left'] = {}
-        new_metadata[pairind]['left']['img_path'] = limg_path
-
-        new_metadata[pairind]['right'] = {}
-        new_metadata[pairind]['right']['img_path'] = rimg_path
+        new_metadata[pairind]['left'] = {'img_path':limg_path}
+        new_metadata[pairind]['right'] = {'img_path':rimg_path}
 
     #save metadata
     print('saving metadata')

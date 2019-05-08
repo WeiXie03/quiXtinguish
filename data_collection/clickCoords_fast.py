@@ -42,6 +42,8 @@ def waitClick(src):
             break
         elif(key == ord('q')):
             return None, None
+        elif(key == ord('s')):
+            return 'skip', 'skip'
     return coord_dict['x'], coord_dict['y']
 
 def load_calib(calib_path):
@@ -87,9 +89,7 @@ if __name__ == "__main__":
     done = False
     for src in left, right:
         for imNum in metadata.keys():
-        #for imNum in range(410, 477+1):
-            imNum = int(imNum)
-
+        #for imNum in range(0, 47+1):
             #metadata[imNum][src.side]['coords'] = ()
 
             img_path = metadata[imNum][src.side]['img_path']
@@ -114,6 +114,10 @@ if __name__ == "__main__":
                     done = True
                     print("Done")
                     break
+                elif mx == 'skip':
+                    metadata[imNum][src.side]['coords'] = (None, None)
+                    print(metadata[imNum], 'skipping')
+                    continue
                 #store coordinates for every image
                 #paird[src.side]['coords'][index] = (mx, my)
                 metadata[imNum][src.side]['coords'] = (mx/xscale, my/yscale)
@@ -126,7 +130,7 @@ if __name__ == "__main__":
                 break
             pprint.pprint(metadata[imNum])
 
-    #pprint.pprint(metadata)
+    pprint.pprint(metadata)
     if input('Would you like to save to file?[y/n]: ') == 'y':
         with open(metadata_path, 'wb') as metadataf:
             pickle.dump(metadata, metadataf)
