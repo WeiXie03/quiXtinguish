@@ -8,13 +8,14 @@ def load_meta(metapath):
 if __name__ == "__main__":
     SRC_DIR, DST_DIR = sys.argv[1], sys.argv[2]
 
-    srcmetad = load_meta(os.path.join(SRC_DIR, 'crpd_metadata.dat'))
+    srcmetad = load_meta(os.path.join(SRC_DIR, 'metadata.dat'))
     dstmetad = load_meta(os.path.join(DST_DIR, 'metadata.dat'))
 
     indshft = len(dstmetad.keys())
     for pairind in range(len(srcmetad.keys())):
+        newind = pairind+indshft
+        dstmetad[newind] = {}
         for side in 'left', 'right':
-            newind = pairind+indshft
 
             #declare old and new paths, get rid of 'data/'
             #oldpath = os.path.join('ml', srcmetad[pairind][side]['img_path'])
@@ -25,7 +26,6 @@ if __name__ == "__main__":
             #move file to dst and rename to change index
             os.renames(oldpath, newpath)
             #update dst metadata
-            dstmetad[newind] = {}
             dstmetad[newind][side] = srcmetad[pairind][side]
             dstmetad[newind][side]['img_path'] = newpath
 

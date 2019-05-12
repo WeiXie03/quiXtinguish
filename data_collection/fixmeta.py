@@ -8,10 +8,8 @@ DATA_DIR = sys.argv[1]
 metadata_path = os.path.join(DATA_DIR, 'metadata.dat')
 metadata = None
 if os.path.isfile(metadata_path):
-    '''
     with open(metadata_path, 'rb') as metadataf:
-        metadata = pickle.load(metadataf)
-    '''
+        oldmetad = pickle.load(metadataf)
     metadata = {}
 else:
     print('metadata file not found, aborting')
@@ -25,7 +23,7 @@ else:
 #for pairNum in range(max(metadata.keys()) + 1, len(os.listdir(limgs_path))):
 #for pairNum in range(len(os.listdir(limgs_path))):
 for pairNum in range(int((len(os.listdir(DATA_DIR))-1)/2)):
-    metadata[pairNum] = {}
+    metadata[pairNum] = oldmetad[pairNum]
 
     #left
     #limg_path = os.path.join(limgs_path, str(pairNum) + '.jpg')
